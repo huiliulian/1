@@ -432,7 +432,15 @@
 
 
 
-<button id="copyBtn" class="ConfirmPayment">点击复制支付链接</button>
+
+
+        <button class="ConfirmPayment" onclick="copyToClipboard()">点击复制支付链接</button>
+        <span id="feedback" class="copy-feedback"></span>
+
+
+
+
+
 
 
 
@@ -637,18 +645,50 @@
 	</script>
 
 
-<script>
-    const text = "这是要复制的文本内容";
-    
-    document.getElementById('copyBtn').addEventListener('click', () => {
-        navigator.clipboard.writeText(text)
-            .then(() => alert('复制成功！'))
-            .catch(err => {
+
+    <script>
+        // 要复制的内容
+        const contentToCopy = "这是要复制的预设内容，可以是任何文本。\n可以包含多行文本和特殊字符!@#$%^&*()";
+        
+        function copyToClipboard() {
+            // 创建一个临时的textarea元素
+            const textarea = document.createElement('textarea');
+            textarea.value = contentToCopy;
+            
+            // 避免在屏幕上显示textarea
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            
+            // 添加到DOM中
+            document.body.appendChild(textarea);
+            
+            // 选中textarea中的文本
+            textarea.select();
+            
+            try {
+                // 执行复制命令
+                const successful = document.execCommand('copy');
+                const feedback = document.getElementById('feedback');
+                
+                if (successful) {
+                    feedback.textContent = '复制成功！';
+                } else {
+                    feedback.textContent = '复制失败，请手动选择复制';
+                }
+                
+                // 3秒后清除反馈信息
+                setTimeout(() => {
+                    feedback.textContent = '';
+                }, 3000);
+            } catch (err) {
                 console.error('复制失败:', err);
-                alert('复制失败，请手动复制');
-            });
-    });
-</script>
+                document.getElementById('feedback').textContent = '复制失败，请手动选择复制';
+            }
+            
+            // 清理DOM
+            document.body.removeChild(textarea);
+        }
+    </script>
 
 
 
