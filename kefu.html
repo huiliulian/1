@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<title>联系客服</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+				padding-top: 44px;
+				background-color: #f5f5f5;
+			}
+
+			.header-bar {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 44px;
+				background-color: #6e8efb;
+				display: flex;
+				align-items: center;
+				z-index: 1000;
+				box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+			}
+
+			.back-btn {
+				height: 100%;
+				padding: 0 12px;
+				display: flex;
+				align-items: center;
+				cursor: pointer;
+				position: relative;
+				z-index: 1;
+			}
+
+			.back-btn::before {
+				content: "";
+				width: 12px;
+				height: 12px;
+				border-left: 2px solid #FFFFFF;
+				border-bottom: 2px solid #FFFFFF;
+				transform: rotate(45deg);
+				margin-right: 5px;
+			}
+
+			.title {
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				font-size: 17px;
+				font-weight: 600;
+				color: #FFFFFF;
+				max-width: 60%;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				text-align: center;
+			}
+
+			/* 适配小屏幕 */
+			@media (max-width: 320px) {
+				.title {
+					font-size: 16px;
+				}
+			}
+
+			.content-container {
+				padding: 12px;
+			}
+
+			.info-section {
+				background-color: #ffffff;
+				border-radius: 8px;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+				margin-bottom: 12px;
+				overflow: hidden;
+			}
+
+			.section-title {
+				padding: 12px;
+				font-size: 15px;
+				font-weight: 500;
+				color: #333;
+				border-bottom: 1px solid #f5f5f5;
+			}
+
+			.contact-item {
+				display: flex;
+				align-items: center;
+				padding: 12px;
+				border-bottom: 1px solid #f5f5f5;
+			}
+
+			.contact-item:last-child {
+				border-bottom: none;
+			}
+
+			.contact-icon {
+				width: 24px;
+				height: 24px;
+				margin-right: 12px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.contact-icon img {
+				width: 100%;
+				height: 100%;
+				object-fit: contain;
+			}
+
+			.contact-info {
+				flex: 1;
+			}
+
+			.contact-name {
+				font-size: 14px;
+				color: #333;
+				margin-bottom: 4px;
+			}
+
+			.contact-desc {
+				font-size: 12px;
+				color: #999;
+			}
+
+			.contact-btn {
+				background-color: #6e8efb;
+				color: white;
+				border: none;
+				border-radius: 4px;
+				padding: 6px 12px;
+				font-size: 13px;
+				cursor: pointer;
+			}
+
+			.contact-btn:hover {
+				background-color: #5a7df4;
+			}
+
+			.business-hours {
+				padding: 12px;
+				font-size: 13px;
+				color: #666;
+				line-height: 1.5;
+			}
+
+			.highlight {
+				color: #6e8efb;
+				font-weight: 500;
+			}
+			
+			
+			
+			
+			
+			
+			
+			#small-qr-code {
+				cursor: pointer;
+			}
+			
+			#modal {
+				display: none;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.7);
+				z-index: 1000;
+				justify-content: center;
+				align-items: center;
+			}
+			
+			#modal img {
+				max-width: 80%;
+				max-height: 80%;
+			}
+			
+			#close-modal {
+				position: absolute;
+				top: 20px;
+				right: 20px;
+				font-size: 30px;
+				color: white;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="header-bar">
+			<div class="back-btn" onclick="window.location.href='user.html'"></div>
+			<div class="title">联系客服</div>
+		</div>
+
+		<div class="content-container">
+			<div class="info-section">
+				<div class="section-title">联系方式</div>
+
+				<div class="contact-item">
+					<div class="contact-icon">
+						<img src="https://img.icons8.com/ios-filled/50/000000/phone.png" alt="电话">
+					</div>
+					<div class="contact-info">
+						<div class="contact-name">客服热线</div>
+						<div class="contact-desc">13888888888</div>
+					</div>
+					<button class="contact-btn" onclick="callPhone()">拨打</button>
+				</div>
+
+				<div class="contact-item">
+					<div class="contact-icon">
+						<img  id="small-qr-code" src="kefu.webp" alt="微信">
+
+					</div>
+					<div class="contact-info">
+						<div class="contact-name">微信客服</div>
+						<div class="contact-desc">添加微信: platform_service</div>
+					</div>
+					<button class="contact-btn" onclick="copyWeChat()">复制</button>
+				</div>
+
+						<div id="modal">
+							<span id="close-modal">&times;</span>
+							<img src="kefu.webp" alt="放大的微信二维码">
+						</div>
+						
+						
+			<!-- 	<div class="contact-item">
+					<div class="contact-icon">
+						<img src="https://img.icons8.com/ios-filled/50/000000/email.png" alt="邮件">
+					</div>
+					<div class="contact-info">
+						<div class="contact-name">邮箱支持</div>
+						<div class="contact-desc">service@platform.com</div>
+					</div>
+					<button class="contact-btn" onclick="copyEmail()">复制</button>
+				</div> -->
+			</div>
+
+			<!-- <div class="info-section">
+				<div class="section-title">在线客服</div>
+				<div class="contact-item" style="cursor: pointer;" onclick="openOnlineService()">
+					<div class="contact-icon">
+						<img src="https://img.icons8.com/ios-filled/50/000000/chat.png" alt="在线客服">
+					</div>
+					<div class="contact-info">
+						<div class="contact-name">在线客服</div>
+						<div class="contact-desc">24小时在线服务</div>
+					</div>
+					<div style="color: #6e8efb; font-size: 13px;">立即咨询</div>
+				</div>
+			</div> -->
+
+			<div class="info-section">
+				<div class="section-title">服务时间</div>
+				<div class="business-hours">
+					<div>客服热线服务时间：</div>
+					<div><span class="highlight">周一至周日 9:00-21:00</span></div>
+					<!-- <div style="margin-top: 8px;">在线客服服务时间：</div>
+					<div><span class="highlight">24小时全天候服务</span></div>
+					<div style="margin-top: 8px; font-size: 12px; color: #999;">
+						注：法定节假日可能调整服务时间，请以最新公告为准
+					</div> -->
+				</div>
+			</div>
+
+		<!-- 	<div class="info-section">
+				<div class="section-title">常见问题</div>
+				<div class="contact-item" style="cursor: pointer;" onclick="openFAQ()">
+					<div class="contact-icon">
+						<img src="https://img.icons8.com/ios-filled/50/000000/help.png" alt="帮助">
+					</div>
+					<div class="contact-info">
+						<div class="contact-name">帮助中心</div>
+						<div class="contact-desc">查看常见问题及解决方案</div>
+					</div>
+					<div style="color: #6e8efb; font-size: 13px;">查看</div>
+				</div>
+			</div> -->
+		</div>
+
+		<script>
+			function goBack() {
+				if (window.history.length > 1) {
+					window.history.back();
+				} else {
+					window.location.href = 'index.html';
+				}
+			}
+
+			function callPhone() {
+				window.location.href = 'tel:4001234567';
+			}
+
+			function copyWeChat() {
+				if (navigator.clipboard) {
+					navigator.clipboard.writeText('platform_service').then(function() {
+						alert('微信号已复制');
+					});
+				} else {
+					// 不支持clipboard API的备用方案
+					const textarea = document.createElement('textarea');
+					textarea.value = 'platform_service';
+					document.body.appendChild(textarea);
+					textarea.select();
+					try {
+						document.execCommand('copy');
+						alert('微信号已复制');
+					} catch (err) {
+						alert('复制失败，请手动选择复制');
+					}
+					document.body.removeChild(textarea);
+				}
+			}
+
+			function copyEmail() {
+				if (navigator.clipboard) {
+					navigator.clipboard.writeText('service@platform.com').then(function() {
+						alert('邮箱已复制');
+					});
+				} else {
+					const textarea = document.createElement('textarea');
+					textarea.value = 'service@platform.com';
+					document.body.appendChild(textarea);
+					textarea.select();
+					try {
+						document.execCommand('copy');
+						alert('邮箱已复制');
+					} catch (err) {
+						alert('复制失败，请手动选择复制');
+					}
+					document.body.removeChild(textarea);
+				}
+			}
+
+			function openOnlineService() {
+				// 这里可以跳转到在线客服页面或打开客服聊天窗口
+				alert('正在连接在线客服...');
+				// window.location.href = 'online_service.html';
+			}
+
+			function openFAQ() {
+				window.location.href = 'faq.html';
+			}
+		</script>
+
+		<!-- 可选：引入FastClick解决移动端点击延迟 -->
+		<script src='https://as.alipayobjects.com/g/component/fastclick/1.0.6/fastclick.js'></script>
+		<script>
+			if ('addEventListener' in document) {
+				document.addEventListener('DOMContentLoaded', function() {
+					FastClick.attach(document.body);
+				}, false);
+			}
+		</script>
+		
+		
+		<script>
+			const smallQrCode = document.getElementById('small-qr-code');
+			const modal = document.getElementById('modal');
+			const closeModal = document.getElementById('close-modal');
+		
+			smallQrCode.addEventListener('click', () => {
+				modal.style.display = 'flex';
+			});
+		
+			closeModal.addEventListener('click', () => {
+				modal.style.display = 'none';
+			});
+		
+			// 点击模态框外部区域关闭模态框
+			modal.addEventListener('click', (e) => {
+				if (e.target === modal) {
+					modal.style.display = 'none';
+				}
+			});
+		</script>
+		
+		
+	</body>
+</html>

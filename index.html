@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding-bottom: 60px; /* 为底部导航留出空间 */
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        /* 页面内容样式 - 仅用于演示 */
+        .content {
+            padding: 20px;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #666;
+        }
+        
+        /* 底部导航栏样式 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+        
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background-color: #1890ff;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover::after,
+        .nav-item.active::after {
+            width: 40%;
+        }
+        
+        .nav-item:hover,
+        .nav-item.active {
+            color: #1890ff;
+        }
+        
+        .nav-item.active {
+            transform: scale(1.05);
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            fill: currentColor;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+        }
+        
+        /* 响应式调整 - 主要针对手机端 */
+        @media (max-width: 768px) {
+            .bottom-nav {
+                height: 50px;
+            }
+            
+            .nav-icon {
+                width: 22px;
+                height: 22px;
+            }
+            
+            .nav-text {
+                font-size: 10px;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ /* 头部容器 */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: #ffffff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+        
+        /* LOGO 样式 */
+        .logo {
+            height: 30px;
+            max-width: 120px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 100%;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 360px) {
+            .logo {
+                height: 25px;
+                max-width: 100px;
+            }
+        }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.carousel-container {
+    position: relative;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.carousel {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    height: 200px; /* 默认高度，会根据图片调整 */
+}
+
+.carousel-item {
+    min-width: 100%;
+    position: relative;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.prev-btn {
+    left: 10px;
+}
+
+.next-btn {
+    right: 10px;
+}
+
+.carousel-indicators {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.indicator.active {
+    background-color: white;
+}
+
+/* 响应式调整 */
+@media (min-width: 576px) {
+    .carousel {
+        height: 250px;
+    }
+}
+
+@media (min-width: 768px) {
+    .carousel {
+        height: 300px;
+    }
+}
+
+@media (min-width: 992px) {
+    .carousel {
+        height: 350px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .carousel {
+        height: 400px;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 从user的弄的样式 */
+
+  
+        /* 功能入口区域 */
+        .quick-actions {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .quick-actions h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        
+        .quick-actions h3 svg {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            fill: #6e8efb;
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .action-item {
+            text-align: center;
+        }
+        
+        .action-item .icon-bg {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0f4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+        }
+        
+        .action-item svg {
+            width: 20px;
+            height: 20px;
+            fill: #6e8efb;
+        }
+        
+        .action-item p {
+            font-size: 12px;
+            color: #666;
+        }
+		
+		
+
+    </style>
+</head>
+<body>
+
+
+ <!-- 头部区域 -->
+    <header class="header">
+        <a href="/" class="logo">
+            <!-- 替换为你的LOGO图片 -->
+            <img src="logo.svg"  alt="网站LOGO" style="width:200%;height: 200%;">
+        </a>
+
+        
+    </header>
+
+
+<div style="height: 60px;"></div>
+
+
+
+   <div class="carousel-container">
+        <div class="carousel">
+            <!-- 图片将通过JavaScript动态加载 -->
+        </div>
+        <button class="carousel-btn prev-btn">&lt;</button>
+        <button class="carousel-btn next-btn">&gt;</button>
+        <div class="carousel-indicators">
+            <!-- 指示器将通过JavaScript动态生成 -->
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+    <div class="content">
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<div class="quick-actions">
+	            <h3>
+	                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+	                    <path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM8 19h12v-2H8v2zm0-6h12v-2H8v2zm0-8v2h12V5H8z"></path>
+	                </svg>
+	                店铺认证:
+					<b style="border: #6e8efb solid 1px; padding: 2.5px; margin-left: auto;"><a href="store-authentication.html" style="color: #6e8efb; font-size: 13px; text-decoration: none;" " > 去认证</a></b>
+	            </h3>
+				
+				
+					<a href="rules.html" style="text-decoration: none;">
+	            <div class="action-grid">
+	                <div class="action-item">
+	                    <div class="icon-bg">
+	                       <svg t="1757107013342" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9639" width="19" height="19"><path d="M512 384H320c-17.7 0-32-14.3-32-32s14.3-32 32-32h192c17.7 0 32 14.3 32 32s-14.3 32-32 32zM704 544H320c-17.7 0-32-14.3-32-32s14.3-32 32-32h384c17.7 0 32 14.3 32 32s-14.3 32-32 32zM704 704H320c-17.7 0-32-14.3-32-32s14.3-32 32-32h384c17.7 0 32 14.3 32 32s-14.3 32-32 32z" fill="#243154" p-id="9640"></path><path d="M776.7 960H247.3C146.2 960 64 877.8 64 776.7V247.3C64 146.2 146.2 64 247.3 64h529.5c101 0 183.3 82.2 183.3 183.3v529.4C960 877.8 877.8 960 776.7 960zM247.3 128C181.5 128 128 181.5 128 247.3v529.4c0 65.8 53.5 119.3 119.3 119.3h529.5c65.8 0 119.3-53.5 119.3-119.3V247.3c0-65.8-53.5-119.3-119.3-119.3H247.3z" fill="#6e8efb" p-id="9641"></path></svg>
+						   </div>
+	                    <p>平台规定</p>
+	                </div>
+					</a>
+					
+					
+	               
+				   
+				   <a href="open.html" style="text-decoration: none;">
+	                <div class="action-item">
+	                    <div class="icon-bg">
+	                     <svg t="1757107115818" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10703" width="19" height="19"><path d="M952.786158 352.800941c0-0.516042-0.172014-0.860071-0.172014-1.376113-0.344028-1.892155-0.860071-3.612296-1.548127-5.332437L875.895851 159.285066c-13.073072-38.703175-50.22812-62.441122-93.919704-62.613136L255.440954 96.67193c-44.207626 0-78.610449 23.565933-90.995464 60.720981L83.770872 347.984546c-0.344028 1.204099-0.860071 2.752226-1.204099 4.472367-5.84848 18.061482-8.77272 36.466991-8.77272 55.044515 0 65.193348 35.778935 124.71023 93.231648 155.328742 0 0 0 0 0 0s0 0 0 0l0 0c0 0 0 0 0 0 23.565933 12.55703 51.432219 18.921552 82.738787 18.921552 52.464304-0.172014 101.144297-23.221905 134.34302-62.78515 33.026709 39.219217 81.19066 62.097094 133.654964 62.441122 51.948261-0.344028 100.112212-23.393919 132.966907-62.613136 33.198723 39.563245 81.878717 62.441122 134.687049 62.441122 31.994625-0.172014 60.204939-6.880564 84.1149-19.953637 56.592642-30.96254 91.683521-90.135394 91.683521-154.640685C961.386864 388.235847 958.29061 369.658324 952.786158 352.800941zM839.084831 505.377457c-14.449185 7.912649-32.510667 12.040988-53.668402 12.040988-39.047203 0-74.48211-19.781623-95.295817-53.324374-1.548127-3.096254-3.956325-8.428691-8.600706-13.417101-5.332437-5.84848-14.793214-12.901058-30.618512-12.901058-12.729044 0-24.25399 5.160423-30.790526 13.245087-4.300353 4.816395-6.70855 9.63279-8.428691 13.245087-20.469679 33.198723-55.732572 53.15236-93.919704 53.324374-38.703175-0.172014-73.966068-20.125651-94.607761-53.496388-1.376113-2.92424-3.78431-7.912649-7.568621-12.040988-14.965228-17.889467-48.679993-17.029397-61.753066-1.376113-4.816395 5.332437-7.396607 10.664875-8.944734 14.277171-20.641693 33.198723-56.248614 52.980346-94.951789 53.15236-20.641693 0-38.359147-3.956325-52.636318-11.524945l0 0c0 0 0 0 0 0-36.639006-19.437594-59.344868-57.452713-59.344868-98.908114 0-12.213002 2.064169-24.598018 6.192508-36.639006 0.344028-0.860071 0.516042-1.892155 0.688056-2.752226l79.470519-187.839409c1.548127-4.816395 6.536536-19.437594 31.306568-19.437594l526.707206 0c10.148833 0.688056 27.694272 2.408198 33.88678 20.641693l74.310096 185.259197c0.344028 1.376113 0.688056 2.580212 1.032085 3.612296 4.128339 12.040988 6.192508 24.25399 6.192508 36.466991C897.397615 447.924744 875.03578 485.595834 839.084831 505.377457z" fill="#6e8efb" p-id="10704"></path><path d="M862.994793 607.897867c-17.717453 0-31.994625 14.277171-31.994625 31.994625l0 174.594322c0 9.976818-8.084663 18.061482-18.061482 18.061482l-602.049387 0.344028c-9.976818 0-18.061482-8.084663-18.061482-17.889467l-0.172014-171.498068c0-17.717453-14.449185-31.994625-31.994625-31.994625 0 0 0 0 0 0-17.717453 0-31.994625 14.449185-31.994625 31.994625l0.172014 171.498068c0 45.067697 36.81102 81.878717 82.050731 81.878717l602.221401-0.344028c45.067697-0.172014 81.878717-36.81102 81.878717-82.050731l0-174.594322C894.989417 622.347052 880.712246 607.897867 862.994793 607.897867z" fill="#6e8efb" p-id="10705"></path><path d="M768.043004 383.935495 255.956996 383.935495c-17.717453 0-31.994625-14.277171-31.994625-31.994625 0-17.717453 14.277171-31.994625 31.994625-31.994625l511.913993 0c17.717453 0 31.994625 14.277171 31.994625 31.994625C800.037628 369.658324 785.588443 383.935495 768.043004 383.935495z" fill="#6e8efb" p-id="10706"></path></svg>
+						   </div>
+	                    <p>我要开店</p>
+	                </div>
+					</a>
+					
+					
+	                <div class="action-item">
+	                    <div class="icon-bg">
+	                        <svg t="1757107525413" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="17743" width="19" height="19"><path d="M938.666667 684.813333V522.666667a53.393333 53.393333 0 0 0-53.333334-53.333334H554.666667V339.186667c48.626667-9.906667 85.333333-53.006667 85.333333-104.52 0-58.813333-47.853333-106.666667-106.666667-106.666667s-106.666667 47.853333-106.666666 106.666667c0 51.513333 36.706667 94.613333 85.333333 104.52V469.333333H181.333333a53.393333 53.393333 0 0 0-53.333333 53.333334v162.146666c-48.626667 9.906667-85.333333 53.006667-85.333333 104.52 0 58.813333 47.853333 106.666667 106.666666 106.666667s106.666667-47.853333 106.666667-106.666667c0-51.513333-36.706667-94.613333-85.333333-104.52V522.666667a10.666667 10.666667 0 0 1 10.666666-10.666667h330.666667v172.813333c-48.626667 9.906667-85.333333 53.006667-85.333333 104.52 0 58.813333 47.853333 106.666667 106.666666 106.666667s106.666667-47.853333 106.666667-106.666667c0-51.513333-36.706667-94.613333-85.333333-104.52V512h330.666666a10.666667 10.666667 0 0 1 10.666667 10.666667v162.146666c-48.626667 9.906667-85.333333 53.006667-85.333333 104.52 0 58.813333 47.853333 106.666667 106.666666 106.666667s106.666667-47.853333 106.666667-106.666667c0-51.513333-36.706667-94.613333-85.333333-104.52z" fill="#6e8efb" p-id="17744"></path></svg>
+	                    </div>
+	                    <p>生态共建</p>
+	                </div>
+	
+	
+	
+				<a href="ord.html" style="text-decoration: none;">
+	                 <div class="action-item">
+	                    <div class="icon-bg">
+	                       <svg t="1757107570081" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="19682" width="19" height="19"><path d="M709.632 275.456H665.6a88.576 88.576 0 0 1-83.456 57.344H441.856A89.088 89.088 0 0 1 358.4 275.456h-44.032a29.184 29.184 0 0 0-30.72 26.624v419.328a29.184 29.184 0 0 0 30.72 27.136h395.264a29.184 29.184 0 0 0 30.72-27.136V302.08a29.184 29.184 0 0 0-30.72-26.624z m-272.384 335.872a26.624 26.624 0 1 1-51.2 0V450.048a26.624 26.624 0 1 1 51.2 0z m102.4 0a26.112 26.112 0 1 1-51.2 0V537.6a26.112 26.112 0 0 1 51.2 0z m102.4 0a26.624 26.624 0 1 1-51.2 0V463.872a26.624 26.624 0 0 1 51.2 0zM441.856 268.8h140.288a25.088 25.088 0 0 0 25.088-25.088 25.6 25.6 0 0 0-25.088-25.6H441.856a25.6 25.6 0 0 0-25.088 25.6 25.088 25.088 0 0 0 25.088 25.088z" fill="#6e8efb" p-id="19683"></path><path d="M512 0a512 512 0 1 0 512 512A512 512 0 0 0 512 0z m292.352 721.408a93.184 93.184 0 0 1-94.72 91.136H314.368a93.184 93.184 0 0 1-94.72-91.136V302.08a93.184 93.184 0 0 1 94.72-90.624H358.4A89.088 89.088 0 0 1 441.856 153.6h140.288A89.088 89.088 0 0 1 665.6 211.456h44.544a93.184 93.184 0 0 1 94.208 90.624z" fill="#6e8efb" p-id="19684"></path></svg>
+	                    </div>
+	                    <p>采购清单</p>
+	                </div>
+				</a>
+	
+	
+
+	
+	            </div>
+	        </div>
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+				  
+	</div>
+    
+    <!-- 底部固定导航栏 -->
+   
+     <nav class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <svg t="1755279003706"  class="nav-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8753" width="39" height="39"><path d="M555.541333 117.994667l312.874667 224.565333A117.333333 117.333333 0 0 1 917.333333 437.866667V800c0 64.8-52.533333 117.333333-117.333333 117.333333H640V746.666667c0-70.688-57.312-128-128-128s-128 57.312-128 128v170.666666H224c-64.8 0-117.333333-52.533333-117.333333-117.333333V437.877333a117.333333 117.333333 0 0 1 48.917333-95.317333l312.874667-224.565333a74.666667 74.666667 0 0 1 87.082666 0z" p-id="8754"></path></svg>
+            <span class="nav-text">首页</span>
+        </a>
+        <a href="team.html" class="nav-item">
+            <svg t="1755279631608" class="nav-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9979" id="mx_n_1755279631609" width="39" height="39"><path d="M593.9 473.4c110.2 23.8 238.4 101.3 238.4 324.8 0 59.6-74.5 59.6-315.8 59.6-244.3 0-315.8 0-315.8-59.6 0-220.5 128.1-300.9 238.4-324.8-86.4-47.7-116.2-157.9-74.5-247.3s146-122.2 226.4-74.5 113.2 157.9 68.5 244.3c-15 35.8-38.8 59.6-65.6 77.5z" p-id="9980"></path><path d="M344.6 469.8c9.4-2.8 11.8-15 4-21-69.2-53-90.4-151.6-52.5-232.9 5.6-12 12.3-23 20-32.9 6.4-8.2-0.2-20.1-10.6-19.2-44.8 3.8-87.1 31.4-108.7 77.7-30.2 64.7-14.2 142.8 39.4 186.4 7.4 6.1 5.2 17.9-4 20.8-82.7 25.8-168.3 94.5-168.3 256.8 0 24.9 15.3 36.9 57.2 42.8 6.7 0.9 12.9-3.9 13.6-10.7 16.5-167.2 115.5-239.9 209.9-267.8zM679.5 469.8c-9.4-2.8-11.8-15-4-21 69.2-53 90.4-151.6 52.5-232.9-5.6-12-12.3-23-20-32.9-6.4-8.2 0.2-20.1 10.6-19.2 44.8 3.8 87.1 31.4 108.7 77.7 30.2 64.7 14.2 142.8-39.4 186.4-7.4 6.1-5.2 17.9 4 20.8 82.7 25.8 168.3 94.5 168.3 256.8 0 24.9-15.3 36.9-57.2 42.8-6.7 0.9-12.9-3.9-13.6-10.7-16.5-167.2-115.5-239.9-209.9-267.8z" p-id="9981"></path></svg>
+            <span class="nav-text">团队采购</span>
+        </a>
+        <!-- <a href="#" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+            </svg>
+            <span class="nav-text">添加</span>
+        </a> -->
+        <!-- <a href="#" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span class="nav-text">消息</span>
+        </a> -->
+        <a href="user.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+            </svg>
+            <span class="nav-text">我的</span>
+        </a>
+    </nav>
+
+
+
+
+
+
+
+
+
+
+
+<script src="Bmob-2.5.30.min.js"></script>
+<script>
+	Bmob.initialize("d5c0b93ae0fac604", "admx19ddmxsn1jxa");
+</script>
+
+<script src="local.js"></script>
+<script src="auth.js"></script>
+
+
+
+
+
+
+
+
+    <script>
+        // 简单的导航项点击效果
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // e.preventDefault();
+                
+                // 移除所有active类
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // 为当前点击项添加active类
+                this.classList.add('active');
+                
+                // 这里可以添加实际的导航逻辑
+                console.log('导航到:', this.querySelector('.nav-text').textContent);
+            });
+        });
+    </script>
+
+
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.querySelector('.carousel');
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+    const indicatorsContainer = document.querySelector('.carousel-indicators');
+    
+    let currentIndex = 0;
+    let images = [];
+    let intervalId;
+    
+    // 获取图片目录中的所有图片
+    // 注意：由于浏览器安全限制，JavaScript不能直接读取服务器目录
+    // 这里需要你提供图片列表，或者使用后端API获取
+    // 以下是模拟数据，实际项目中应该从服务器获取
+    
+    // 模拟从/CarouselIMG/目录获取图片（实际项目中替换为真实获取逻辑）
+    // 这里我们假设有以下图片（实际项目中需要动态获取）
+    const mockImages = [
+            'CarouselIMG/001.png',
+            'CarouselIMG/002.png',
+            'CarouselIMG/003.png',
+            'CarouselIMG/004.png',
+            'CarouselIMG/005.png',
+            'CarouselIMG/006.png',
+            'CarouselIMG/007.png',
+            'CarouselIMG/008.png',
+            'CarouselIMG/009.png',
+            'CarouselIMG/010.png',
+            'CarouselIMG/011.png',
+            'CarouselIMG/012.png',
+    ];
+    
+    // 实际项目中，你可能需要使用fetch或axios从后端API获取图片列表
+    // 例如：
+    /*
+    fetch('/api/getCarouselImages')
+        .then(response => response.json())
+        .then(data => {
+            images = data.map(img => `CarouselIMG/${img}`);
+            initCarousel();
+        })
+        .catch(error => {
+            console.error('获取轮播图失败:', error);
+            // 使用模拟数据作为后备
+            images = mockImages;
+            initCarousel();
+        });
+    */
+    
+    // 由于直接读取目录不可行，我们直接使用模拟数据
+    images = mockImages;
+    initCarousel();
+    
+    function initCarousel() {
+        if (images.length === 0) {
+            console.warn('没有找到轮播图片');
+            return;
+        }
+        
+        // 创建轮播项
+        images.forEach((imgSrc, index) => {
+            const item = document.createElement('div');
+            item.className = 'carousel-item';
+            
+            const img = document.createElement('img');
+            img.src = imgSrc;
+            img.alt = `轮播图 ${index + 1}`;
+            img.onload = function() {
+                // 图片加载后调整轮播容器高度（基于第一张图片的宽高比）
+                if (index === 0) {
+                    adjustCarouselHeight(this.naturalWidth, this.naturalHeight);
+                }
+            };
+            img.onerror = function() {
+                console.error(`图片加载失败: ${imgSrc}`);
+                // 可以设置一个默认图片或跳过
+            };
+            
+            item.appendChild(img);
+            carousel.appendChild(item);
+            
+            // 创建指示器
+            const indicator = document.createElement('div');
+            indicator.className = 'indicator';
+            if (index === 0) indicator.classList.add('active');
+            indicator.addEventListener('click', () => goToSlide(index));
+            indicatorsContainer.appendChild(indicator);
+        });
+        
+        // 设置初始位置
+        updateCarousel();
+        
+        // 自动轮播
+        startAutoPlay();
+        
+        // 添加事件监听
+        prevBtn.addEventListener('click', () => {
+            goToPrev();
+            resetAutoPlay();
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            goToNext();
+            resetAutoPlay();
+        });
+        
+        // 触摸事件支持（手机端滑动）
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        carousel.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            pauseAutoPlay();
+        }, {passive: true});
+        
+        carousel.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+            resetAutoPlay();
+        }, {passive: true});
+    }
+    
+    function adjustCarouselHeight(naturalWidth, naturalHeight) {
+        const carousel = document.querySelector('.carousel');
+        const containerWidth = carousel.offsetWidth;
+        const calculatedHeight = (naturalHeight / naturalWidth) * containerWidth;
+        
+        // 设置轮播容器高度（基于第一张图片的宽高比）
+        carousel.style.height = `${calculatedHeight}px`;
+        
+        // 添加窗口大小变化监听，保持响应式
+        window.addEventListener('resize', () => {
+            const newContainerWidth = carousel.offsetWidth;
+            const newHeight = (naturalHeight / naturalWidth) * newContainerWidth;
+            carousel.style.height = `${newHeight}px`;
+        });
+    }
+    
+    function updateCarousel() {
+        const items = document.querySelectorAll('.carousel-item');
+        const indicators = document.querySelectorAll('.indicator');
+        
+        carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+        
+        // 更新指示器状态
+        indicators.forEach((indicator, index) => {
+            if (index === currentIndex) {
+                indicator.classList.add('active');
+            } else {
+                indicator.classList.remove('active');
+            }
+        });
+    }
+    
+    function goToPrev() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        updateCarousel();
+    }
+    
+    function goToNext() {
+        currentIndex = (currentIndex + 1) % images.length;
+        updateCarousel();
+    }
+    
+    function goToSlide(index) {
+        currentIndex = index;
+        updateCarousel();
+    }
+    
+    function handleSwipe() {
+        const threshold = 50; // 滑动阈值
+        if (touchEndX < touchStartX - threshold) {
+            goToNext(); // 向左滑动，下一张
+        } else if (touchEndX > touchStartX + threshold) {
+            goToPrev(); // 向右滑动，上一张
+        }
+    }
+    
+    function startAutoPlay() {
+        intervalId = setInterval(goToNext, 3000);
+    }
+    
+    function pauseAutoPlay() {
+        clearInterval(intervalId);
+    }
+    
+    function resetAutoPlay() {
+        pauseAutoPlay();
+        startAutoPlay();
+    }
+});
+
+</script>
+</body>
+</html>

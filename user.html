@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户信息中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            padding: 15px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        /* 头部用户信息区域 */
+        .user-header {
+            background:#6e8efb;
+            border-radius: 12px;
+            padding: 15px;
+            padding-bottom: 1px;
+            color: white;
+            /* margin-bottom: 20px; */
+            /* box-shadow: 0 4px 12px rgba(110, 142, 251, 0.2); */
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .avatar svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+        
+        .user-details h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .user-details p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* 用户数据卡片区域 */
+        .data-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .data-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-card .value {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 8px 0;
+            color: #6e8efb;
+        }
+        
+        .data-card .label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .data-card svg {
+            width: 24px;
+            height: 24px;
+            fill: #6e8efb;
+        }
+        
+        /* 功能入口区域 */
+        .quick-actions {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .quick-actions h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        
+        .quick-actions h3 svg {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            fill: #6e8efb;
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .action-item {
+            text-align: center;
+        }
+        
+        .action-item .icon-bg {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0f4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+        }
+        
+        .action-item svg {
+            width: 20px;
+            height: 20px;
+            fill: #6e8efb;
+        }
+        
+        .action-item p {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 订单列表区域 */
+        .orders-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .orders-section h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        
+        .orders-section h3 svg {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            fill: #6e8efb;
+        }
+        
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .order-table th {
+            font-size: 12px;
+            color: #999;
+            text-align: left;
+            padding-bottom: 10px;
+            font-weight: normal;
+        }
+        
+        .order-table td {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+        
+        .order-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .order-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+        
+        .status-pending {
+            background-color: #fff3e0;
+            color: #ff9800;
+        }
+        
+        .status-shipped {
+            background-color: #e3f2fd;
+            color: #2196f3;
+        }
+        
+        .status-completed {
+            background-color: #e8f5e9;
+            color: #4caf50;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 360px) {
+            .data-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .order-table th:nth-child(3),
+            .order-table td:nth-child(3) {
+                display: none;
+            }
+        }
+
+
+
+
+
+           .tow {
+            display: flex;
+            flex-direction: column;
+        }
+
+
+
+
+
+
+        
+
+
+
+
+        /* 多行信息区块 */
+        .multi-line-info {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .multi-line-info h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        
+        .multi--info h3 svg {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            fill: #6e8efb;
+        }
+        
+        .info-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: #666;
+            flex: 1;
+        }
+        
+        .info-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+            flex: 1;
+        }
+        
+      
+
+
+
+
+
+
+
+.content {
+    padding: 20px;
+    transition: filter 0.3s;
+}
+
+
+.side-panel {
+    position: fixed;
+    top: 0;
+    left: -300px; /* 初始隐藏在左侧 */
+    width: 300px;
+    height: 100%;
+    background-color: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    z-index: 100;
+}
+
+.side-panel.active {
+    transform: translateX(300px); /* 向右滑动300px */
+}
+
+.panel-content {
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 90;
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+body.dimmed  .content{
+    filter: brightness(0.7);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ /* 底部导航栏样式 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+        
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background-color: #1890ff;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover::after,
+        .nav-item.active::after {
+            width: 40%;
+        }
+        
+        .nav-item:hover,
+        .nav-item.active {
+            color: #1890ff;
+        }
+        
+        .nav-item.active {
+            transform: scale(1.05);
+        }
+        
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            fill: currentColor;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+        }
+        
+        /* 响应式调整 - 主要针对手机端 */
+        @media (max-width: 768px) {
+            .bottom-nav {
+                height: 50px;
+            }
+            
+            .nav-icon {
+                width: 22px;
+                height: 22px;
+            }
+            
+            .nav-text {
+                font-size: 10px;
+            }
+        }
+
+
+
+
+
+
+   /* 新增的文本样式服务入口 */
+        .text-action-grid {
+            display: flex; 
+            /* display: grid;*/
+             /* grid-template-columns: repeat(2, 1fr); */
+            margin-top: 10px;
+             margin-bottom: 10px;
+
+            justify-content: space-between;
+            padding: 10px;
+            /* gap: 20px; */
+            background-color: #ffffff;
+            border: #f5f5f5 solid 1.5px;
+            border-radius: 10px;
+
+        }
+        
+        .text-action-item {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 5px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .text-action-item:active {
+            background-color: #e0e8ff;
+            transform: scale(0.98);
+        }
+        
+        .text-action-item h4 {
+            font-size: 18px;
+            color: #6e8efb;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        
+        .text-action-item p {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.3;
+        }
+
+
+
+
+
+
+
+
+
+
+
+        .exitlogin{
+            background-color: red;
+            border-radius: 10px;
+
+            color: #ffffff;
+            text-align: center;
+            font-weight: 200;
+
+            padding: 10px;
+            
+        }
+
+
+
+
+
+
+        .cl {
+            background-color: #6e8efb;
+            
+        }
+
+
+        .cw{
+            color: #f0f0f0;
+        }
+
+
+        .hy{
+            background-color: #ffffff;
+            padding: 5px;
+            color: #6e8efb;
+            text-align: center;
+            border-radius: 8px;
+
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 用户头部信息 -->
+        <div class="user-header">
+            <div class="user-info">
+                <div class="avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <div class="user-details">
+                    <h2>帐号: 139****1768</h2>
+                    <!-- <p>张三</p> -->
+                    <p class="hy">会员等级: 普通会员</p>
+                    
+      
+
+                </div>
+                
+                <div class="content">
+                       <a  style="width: 50px; text-align: right;"  id="openPanelBtn">
+                <svg t="1755336395952" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2354" width="19" height="19"><path d="M919.6 405.6l-57.2-8c-12.7-1.8-23-10.4-28-22.1-11.3-26.7-25.7-51.7-42.9-74.5-7.7-10.2-10-23.5-5.2-35.3l21.7-53.5c6.7-16.4 0.2-35.3-15.2-44.1L669.1 96.6c-15.4-8.9-34.9-5.1-45.8 8.9l-35.4 45.3c-7.9 10.2-20.7 14.9-33.5 13.3-14-1.8-28.3-2.8-42.8-2.8-14.5 0-28.8 1-42.8 2.8-12.8 1.6-25.6-3.1-33.5-13.3l-35.4-45.3c-10.9-14-30.4-17.8-45.8-8.9L230.4 168c-15.4 8.9-21.8 27.7-15.2 44.1l21.7 53.5c4.8 11.9 2.5 25.1-5.2 35.3-17.2 22.8-31.7 47.8-42.9 74.5-5 11.8-15.3 20.4-28 22.1l-57.2 8C86 408 72.9 423 72.9 440.8v142.9c0 17.7 13.1 32.7 30.6 35.2l57.2 8c12.7 1.8 23 10.4 28 22.1 11.3 26.7 25.7 51.7 42.9 74.5 7.7 10.2 10 23.5 5.2 35.3l-21.7 53.5c-6.7 16.4-0.2 35.3 15.2 44.1L354 927.8c15.4 8.9 34.9 5.1 45.8-8.9l35.4-45.3c7.9-10.2 20.7-14.9 33.5-13.3 14 1.8 28.3 2.8 42.8 2.8 14.5 0 28.8-1 42.8-2.8 12.8-1.6 25.6 3.1 33.5 13.3l35.4 45.3c10.9 14 30.4 17.8 45.8 8.9l123.7-71.4c15.4-8.9 21.8-27.7 15.2-44.1l-21.7-53.5c-4.8-11.8-2.5-25.1 5.2-35.3 17.2-22.8 31.7-47.8 42.9-74.5 5-11.8 15.3-20.4 28-22.1l57.2-8c17.6-2.5 30.6-17.5 30.6-35.2V440.8c0.2-17.8-12.9-32.8-30.5-35.2z m-408 245.5c-76.7 0-138.9-62.2-138.9-138.9s62.2-138.9 138.9-138.9 138.9 62.2 138.9 138.9-62.2 138.9-138.9 138.9z" fill="#ffffff" p-id="2355"></path></svg>
+                       </a>
+                        </div>
+         
+          
+          
+          
+            </div>
+            
+
+            
+            <div class="data-cards" >
+                <div class="data-card" style="background-color: #6e8efb;">
+                    <div class="value" style="color: #ffffff;">DKVBD1</div>
+                    <div class="label"  style="color: #ffffff;">邀请码</div>
+                </div>
+
+
+                 <div class="data-card">
+                    <div class="value">0.0</div>
+                    <div class="label">积分</div>
+                </div>
+
+
+            </div>
+        </div>
+        
+
+
+
+
+
+
+
+
+
+
+
+         <div class="text-action-grid">
+                <div class="text-action-item">
+                     <!-- <div class="value">0</div> -->
+                       <h4>0</h4>
+                    <p>技术服务费</p>
+                </div>
+                
+                <div class="text-action-item">
+                    <h4>0</h4>
+                    <p>赠送权益</p>
+                </div>
+				
+				
+				
+                <a   href="directRecommendation.html" style="text-decoration: none;"    class="text-action-item">
+                    <h4>0</h4>
+                    <p>直推积分</p>
+                </a>
+				
+				
+				
+                <a href="withdraw.html" style="text-decoration: none;"   class="text-action-item">
+                     <h4>0</h4>
+                    <p>已转积分</p>
+                </a>
+				
+				
+				
+            </div>
+
+
+
+
+
+
+
+
+        
+
+
+        <!-- 快速功能入口 -->
+      <div class="quick-actions">
+		  
+		  
+		  
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM8 19h12v-2H8v2zm0-6h12v-2H8v2zm0-8v2h12V5H8z"/>
+                </svg>
+                我的服务
+            </h3>
+			
+			
+            <div class="action-grid">
+				
+				
+         <!--       <div class="action-item">
+                    <div class="icon-bg">
+                       <svg t="1756671635178" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3296" width="39" height="39"><path d="M94.907317 1020.878049c-7.492683 6.243902-19.980488 1.873171-19.980488-8.117073V43.082927C74.926829 19.356098 94.282927 0 118.634146 0h786.731708c24.35122 0 43.707317 19.356098 43.707317 43.082927v967.804878c0 8.741463-8.741463 14.360976-16.858537 11.239024-3.121951-1.24878-6.868293-2.497561-9.365854-4.995122-64.936585-43.082927-129.24878-85.541463-193.560975-129.24878-13.112195-8.741463-21.853659-9.365854-34.965854-0.62439-53.697561 36.839024-108.019512 71.804878-161.717073 108.643902-16.858537 11.863415-28.721951 10.614634-44.331707-0.62439-52.44878-36.214634-106.770732-71.180488-159.843903-107.395122-13.736585-9.365854-23.102439-9.365854-37.463414 0-63.063415 43.082927-126.75122 84.917073-190.439025 127.37561-0.62439 0.62439-1.24878 0.62439-1.24878 1.24878l-4.370732 4.370732z m782.360976-135.492683V123.004878c0-29.970732-24.35122-54.321951-54.321952-54.321951h-624.390243c-29.970732 0-54.321951 24.35122-54.321952 54.321951v761.756098c0 9.365854 10.614634 15.609756 18.731708 9.990244 44.331707-29.970732 87.414634-58.068293 128.62439-86.165854 13.112195-9.365854 21.853659-9.365854 35.590244 0 54.946341 37.463415 109.892683 73.053659 164.839024 110.517073 13.736585 9.365854 23.726829 9.365854 37.463415 0 53.073171-36.214634 107.395122-70.556098 159.843902-107.395122 16.858537-11.239024 27.473171-12.487805 44.331708-0.62439 39.960976 28.721951 81.795122 56.195122 124.253658 84.917073 8.741463 4.370732 19.356098-0.62439 19.356098-10.614634z" p-id="3297" fill="#6e8efb"></path><path d="M483.278049 535.102439H382.75122c-18.107317 0-32.468293-14.985366-32.468293-32.468293 0-18.107317 14.985366-32.468293 32.468293-32.468292H480.780488V402.107317H382.75122c-18.107317 0-32.468293-14.985366-32.468293-32.468293v-2.497561c0-18.107317 14.985366-32.468293 32.468293-32.468292h80.546341c-28.721951-26.84878-54.946341-51.2-82.419512-77.424391-14.360976-13.736585-13.112195-36.839024 1.873171-49.326829 1.873171-1.873171 3.746341-3.121951 5.619512-4.995122 13.112195-10.614634 33.092683-9.365854 44.956097 3.121951 24.97561 26.84878 51.2 56.195122 79.921951 87.414635 30.595122-32.468293 58.692683-61.814634 84.917074-89.287805 13.112195-13.112195 34.965854-13.112195 47.453658 0l1.873171 1.87317c12.487805 13.112195 12.487805 33.717073-1.248781 46.829269-24.97561 24.35122-51.82439 49.95122-78.04878 75.551219 1.24878 3.121951 1.873171 3.121951 2.497561 6.243903h78.04878c18.107317 0 32.468293 14.985366 32.468293 32.468292v1.248781c0 18.107317-14.985366 32.468293-32.468293 32.468293H551.336585v65.560975h96.780488c18.107317 0 32.468293 14.985366 32.468293 32.468293v1.873171c0 18.107317-14.985366 32.468293-32.468293 32.468292H550.087805v99.902439c0 18.107317-14.985366 33.092683-33.092683 33.092683s-33.092683-14.985366-33.092683-33.717073c-0.62439-29.970732-0.62439-62.439024-0.62439-97.404878z" p-id="3298" fill="#6e8efb"></path></svg>
+                    </div>
+                    <p>采购明细</p>
+                </div> -->
+               
+			   
+			   
+                <a class="action-item" href="shops_list.html" style="text-decoration: none;" >
+                    <div class="icon-bg">
+                      <svg t="1756671783174" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4403" width="39" height="39"><path d="M829.220317 124.424824l-7.074116-10.656711L211.680609 113.768113l-7.141654 9.141194C48.983109 321.498248 70.507332 442.416202 97.154225 496.860185c26.740014 54.537104 80.878029 89.831958 137.977491 89.831958l5.146207 0c72.043826-2.867304 119.953999-38.642089 145.190777-64.548108 22.793122 25.90602 65.699328 60.541865 132.855844 60.541865 70.02382 0 113.703645-37.70167 135.579885-63.877843 30.546713 24.907273 90.183975 65.721841 152.687518 65.721841 40.980343 0 76.085886-16.799618 104.681154-49.907667C1017.364371 411.082566 836.949348 136.066979 829.220317 124.424824zM874.641809 503.603773c-19.22383 22.49841-41.49916 33.236985-68.14503 33.236985-60.246129 0-122.821303-54.56064-136.7792-67.51979L669.717579 305.754682c0.023536-0.458441 0.258896-0.799202 0.258896-1.245364 0-13.252839-10.714016-23.967878-23.920806-23.967878-13.227256 0-23.919782 10.715039-23.919782 23.967878l-0.258896 0 0 177.851641c-13.063527 17.811668-46.172599 52.634778-103.552447 52.634778-64.784492 0-98.525967-44.292785-107.666138-58.367339l0-172.120103c0-13.252839-10.715039-23.967878-23.898293-23.967878-13.228279 0-23.943318 10.715039-23.943318 23.967878l0 171.250292c-11.725042 15.249309-52.070936 60.389392-124.465756 63.37233l-3.219321 0 0-0.047072c-31.933293 0-73.688279-19.585057-95.000678-63.232137-21.358447-43.540655-36.843116-141.948943 94.953605-314.397526l561.097208 0C845.996398 240.173035 940.480306 427.225221 874.641809 503.603773zM831.288418 613.83227c-13.277398 0-24.086581 10.761088-24.13263 24.037463l0 0.045025c0 0.048095 0 0.048095 0 0.095167 0 0 0 0.023536 0 0.059352l0 173.505659c0 26.693965-21.641903 48.312332-48.263214 48.312332L552.089555 859.887268c-0.022513 0-0.022513 0-0.046049 0L264.081049 859.887268c-26.623357 0-48.26526-21.618367-48.26526-48.312332l0-173.634596c-0.023536-13.323447-10.80816-24.108071-24.109094-24.108071-13.299911 0-24.084535 10.784624-24.131607 24.108071l0 178.452321c0 50.730405 41.026392 91.804892 91.664699 91.804892l504.492002 0c50.637284 0 91.662653-41.074487 91.662653-91.804892L855.394443 637.869732C855.325881 624.592334 844.562746 613.83227 831.288418 613.83227z" fill="#6e8efb" p-id="4404"></path></svg>
+                    </div>
+                    <p>店铺列表</p>
+                </a>
+				
+				
+				
+              <!--  <div class="action-item">
+                    <div class="icon-bg">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-2V8c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v10h9v-1.5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5V19c0 .55-.45 1-1 1h-3v3.01c0 .55-.45 1-1 1s-1-.45-1-1V20H6c-2.21 0-4-1.79-4-4V8c0-2.21 1.79-4 4-4h5c.34 0 .66.05.96.15L8.77 5.77l1.41 1.41L12 4.84l2.82 2.82 1.41-1.41-1.58-1.59 3.04-.44zM18.5 10.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                        </svg>
+                    </div>
+                    <p>待添加</p>
+                </div>
+
+ -->
+
+
+                 <a class="action-item" href="kefu.html" style="text-decoration: none;"  >
+                    <div class="icon-bg">
+                       <svg t="1756672451538" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6401" width="39" height="39"><path d="M927.616 465.6C923.328 236.704 745.888 51.808 528 51.808h-32c-217.888 0-395.328 184.896-399.616 413.76C58.112 487.744 32 528.672 32 576v64c0 70.592 57.408 128 128 128s128-57.408 128-128v-64a128.064 128.064 0 0 0-126.784-127.872C173.728 262.688 318.912 115.808 496 115.808h32c177.12 0 322.272 146.88 334.784 332.32A128.064 128.064 0 0 0 736 576v64c0 57.792 38.72 106.176 91.392 122.016a337.504 337.504 0 0 1-191.936 124.48A79.712 79.712 0 0 0 560 832a80 80 0 1 0 0 160 79.68 79.68 0 0 0 67.872-38.112 402.432 402.432 0 0 0 278.24-193.6C955.968 742.816 992 695.776 992 640v-64c0-47.328-26.112-88.256-64.384-110.4zM224 576v64c0 35.296-28.704 64-64 64s-64-28.704-64-64v-64c0-35.296 28.704-64 64-64s64 28.704 64 64z m704 64c0 34.304-27.2 62.176-61.12 63.712l-2.496-1.184c-0.224 0.512-0.576 0.928-0.8 1.408A64 64 0 0 1 800 640v-64c0-35.296 28.704-64 64-64s64 28.704 64 64v64z" p-id="6402" fill="#6e8efb"></path></svg>
+                    </div>
+                    <p>联系客服</p>
+                </a>
+
+
+
+                <div style="height: 30px;"></div>
+
+            </div>
+        </div> 
+
+
+
+
+
+    <!-- 侧边面板 -->
+    <div id="sidePanel" class="side-panel">
+        <div class="panel-content">
+            
+
+
+<div class="multi-line-info">
+            
+            <div class="info-rows">
+              <!--  <div class="info-row">
+                    <span class="info-label">支付方式</span>
+                    <span class="info-value">></span>
+                </div> -->
+				
+                <div class="info-row"  onclick="alert('更多功能请等待平台开放')" >
+                    <span class="info-label">隐私策略</span>
+                    <span class="info-value">></span>
+                </div>
+                <div class="info-row"  onclick="alert('更多功能请等待平台开放')" >
+                    <span class="info-label">关于我们</span>
+                    <span class="info-value highlight-value">></span>
+                </div>
+            </div>
+        </div>
+
+
+        
+
+    <div class=" exitlogin">
+                    <span class="info-label" style="color: #ffffff;">退出登录</span>
+                </div>
+
+                <br/>
+    <div class=" exitlogin"  id="closePanelBtn">
+                    <span class="info-label" style="color: #ffffff;">关闭设置</span>
+                </div>
+
+        </div>
+    </div>
+
+    <!-- 遮罩层 -->
+    <div id="overlay" class="overlay"></div>
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+     <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <svg t="1755279003706"  class="nav-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8753" width="39" height="39"><path d="M555.541333 117.994667l312.874667 224.565333A117.333333 117.333333 0 0 1 917.333333 437.866667V800c0 64.8-52.533333 117.333333-117.333333 117.333333H640V746.666667c0-70.688-57.312-128-128-128s-128 57.312-128 128v170.666666H224c-64.8 0-117.333333-52.533333-117.333333-117.333333V437.877333a117.333333 117.333333 0 0 1 48.917333-95.317333l312.874667-224.565333a74.666667 74.666667 0 0 1 87.082666 0z" p-id="8754"></path></svg>
+            <span class="nav-text">首页</span>
+        </a>
+        <a href="team.html" class="nav-item">
+            <svg t="1755279631608" class="nav-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9979" id="mx_n_1755279631609" width="39" height="39"><path d="M593.9 473.4c110.2 23.8 238.4 101.3 238.4 324.8 0 59.6-74.5 59.6-315.8 59.6-244.3 0-315.8 0-315.8-59.6 0-220.5 128.1-300.9 238.4-324.8-86.4-47.7-116.2-157.9-74.5-247.3s146-122.2 226.4-74.5 113.2 157.9 68.5 244.3c-15 35.8-38.8 59.6-65.6 77.5z" p-id="9980"></path><path d="M344.6 469.8c9.4-2.8 11.8-15 4-21-69.2-53-90.4-151.6-52.5-232.9 5.6-12 12.3-23 20-32.9 6.4-8.2-0.2-20.1-10.6-19.2-44.8 3.8-87.1 31.4-108.7 77.7-30.2 64.7-14.2 142.8 39.4 186.4 7.4 6.1 5.2 17.9-4 20.8-82.7 25.8-168.3 94.5-168.3 256.8 0 24.9 15.3 36.9 57.2 42.8 6.7 0.9 12.9-3.9 13.6-10.7 16.5-167.2 115.5-239.9 209.9-267.8zM679.5 469.8c-9.4-2.8-11.8-15-4-21 69.2-53 90.4-151.6 52.5-232.9-5.6-12-12.3-23-20-32.9-6.4-8.2 0.2-20.1 10.6-19.2 44.8 3.8 87.1 31.4 108.7 77.7 30.2 64.7 14.2 142.8-39.4 186.4-7.4 6.1-5.2 17.9 4 20.8 82.7 25.8 168.3 94.5 168.3 256.8 0 24.9-15.3 36.9-57.2 42.8-6.7 0.9-12.9-3.9-13.6-10.7-16.5-167.2-115.5-239.9-209.9-267.8z" p-id="9981"></path></svg>
+            <span class="nav-text">团队采购</span>
+        </a>
+        <!-- <a href="#" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+            </svg>
+            <span class="nav-text">添加</span>
+        </a> -->
+        <!-- <a href="#" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span class="nav-text">消息</span>
+        </a> -->
+        <a href="user.html" class="nav-item active" >
+            <svg class="nav-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+            </svg>
+            <span class="nav-text">我的</span>
+        </a>
+    </nav>
+
+
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+    const openPanelBtn = document.getElementById('openPanelBtn');
+    const closePanelBtn = document.getElementById('closePanelBtn');
+    const sidePanel = document.getElementById('sidePanel');
+    const overlay = document.getElementById('overlay');
+    const body = document.body;
+
+    // 打开面板
+    openPanelBtn.addEventListener('click', function() {
+        sidePanel.classList.add('active');
+        overlay.classList.add('active');
+        body.classList.add('dimmed');
+    });
+
+    // 关闭面板
+    closePanelBtn.addEventListener('click', closePanel);
+    
+    // 点击遮罩层关闭面板
+    overlay.addEventListener('click', closePanel);
+
+    function closePanel() {
+        sidePanel.classList.remove('active');
+        overlay.classList.remove('active');
+        body.classList.remove('dimmed');
+    }
+
+    // 按ESC键关闭面板
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && sidePanel.classList.contains('active')) {
+            closePanel();
+        }
+    });
+});
+    </script>
+
+
+
+
+
+
+
+
+
+ <script>
+        // 简单的导航项点击效果
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // e.preventDefault();
+                
+                // 移除所有active类
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                
+                // 为当前点击项添加active类
+                this.classList.add('active');
+                
+                // 这里可以添加实际的导航逻辑
+                console.log('导航到:', this.querySelector('.nav-text').textContent);
+            });
+        });
+    </script>
+
+
+</body>
+</html>

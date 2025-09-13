@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户信息中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .container {
+            padding: 15px;
+            padding-bottom: 5px;
+            padding-top: 5px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* 头部用户信息区域 */
+        .user-header {
+            background-color: #6e8efb;
+            border-radius: 12px;
+            padding: 15px;
+            padding-bottom: 1px;
+            color: white;
+            /* margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(110, 142, 251, 0.2); */
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            /* border-radius: 50%; */
+          /*  background-color: rgba(255, 255, 255, 0.2); */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          
+            /* border: 2px solid rgba(255, 255, 255, 0.3); */
+        }
+
+        .avatar svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .user-details h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .user-details p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* 用户数据卡片区域 */
+        .data-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .data-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+
+        }
+
+        .data-card .value {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 8px 0;
+            color: #6e8efb;
+        }
+
+        .data-card .label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .data-card svg {
+            width: 24px;
+            height: 24px;
+            fill: #6e8efb;
+        }
+
+        /* 功能入口区域 */
+        .quick-actions {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .quick-actions h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .quick-actions h3 svg {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            fill: #6e8efb;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .action-item {
+            text-align: center;
+        }
+
+        .action-item .icon-bg {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #f0f4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+        }
+
+        .action-item svg {
+            width: 20px;
+            height: 20px;
+            fill: #6e8efb;
+        }
+
+        .action-item p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* 订单列表区域 */
+        .orders-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+
+            margin-top: 15px;
+            border: #f5f5f5 2px solid;
+        }
+
+        .orders-section h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .orders-section h3 svg {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            fill: #6e8efb;
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order-table th {
+            font-size: 12px;
+            color: #999;
+            text-align: left;
+            padding-bottom: 10px;
+            font-weight: normal;
+        }
+
+        .order-table td {
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .order-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .order-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
+        .status-pending {
+            background-color: #fff3e0;
+            color: #ff9800;
+        }
+
+        .status-shipped {
+            background-color: #e3f2fd;
+            color: #2196f3;
+        }
+
+        .status-completed {
+            background-color: #e8f5e9;
+            color: #4caf50;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 360px) {
+            .data-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .action-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .order-table th:nth-child(3),
+            .order-table td:nth-child(3) {
+                display: none;
+            }
+        }
+
+
+
+
+
+        .tow {
+            display: flex;
+            flex-direction: column;
+        }
+
+
+
+
+
+
+
+
+
+
+
+        /* 多行信息区块 */
+        .multi-line-info {
+            background-color: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .multi-line-info h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .multi--info h3 svg {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            fill: #6e8efb;
+        }
+
+        .info-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #666;
+            flex: 1;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+            flex: 1;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /* 新增的文本样式服务入口 */
+        .text-action-grid {
+            display: flex;
+            /* display: grid;*/
+            /* grid-template-columns: repeat(2, 1fr); */
+            margin-top: 10px;
+            margin-bottom: 10px;
+
+            justify-content: space-between;
+            padding: 10px;
+            /* gap: 20px; */
+            background-color: #ffffff;
+            border: #6e8efb solid 1px;
+            border-radius: 10px;
+
+        }
+
+        .text-action-item {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 5px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .text-action-item:active {
+            background-color: #e0e8ff;
+            transform: scale(0.98);
+        }
+
+        .text-action-item h4 {
+            font-size: 18px;
+            color: #6e8efb;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .text-action-item p {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.3;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        /* 底部导航栏样式 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background-color: #1890ff;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover::after,
+        .nav-item.active::after {
+            width: 40%;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            color: #1890ff;
+        }
+
+        .nav-item.active {
+            transform: scale(1.05);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            fill: currentColor;
+        }
+
+        .nav-text {
+            font-size: 12px;
+        }
+
+        /* 响应式调整 - 主要针对手机端 */
+        @media (max-width: 768px) {
+            .bottom-nav {
+                height: 50px;
+            }
+
+            .nav-icon {
+                width: 22px;
+                height: 22px;
+            }
+
+            .nav-text {
+                font-size: 10px;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        .cg {
+
+            margin-top: 5px;
+            color: #6e8efb;
+            border-radius: 20px;
+            padding: 2px;
+        }
+
+
+
+
+
+
+        .cl {
+            background-color: #6e8efb;
+
+        }
+
+
+        .cw {
+            color: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 用户头部信息 -->
+        <div class="user-header">
+
+
+            <!-- <div class="user-details">
+                    <h2>帐号: 88888888</h2>
+                    <p>张三</p>
+                    <p>会员等级: VIP 3</p>
+                </div> -->
+
+            <div style=" display:flex;
+    justify-content:center; ">
+
+                <div class="avatar">
+		<img  src="logo.svg" style="width: 200%; height: 200%;"/>
+					
+					
+<!--                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path
+                            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                    </svg> -->
+                </div>
+
+
+            </div>
+
+
+
+
+
+            <div class="data-cards">
+                <div class="data-card" style="background-color: #6e8efb;">
+                    <div class="value" style="color: #ffffff;">0 ¥</div>
+                    <div class="label" style="color: #ffffff;">团队采购总金额</div>
+                    <div class="label cg" style="color: #6e8efb; font-size: 13px; background-color: #ffffff;">采购数量: 0
+                    </div>
+                </div>
+
+
+                <div class="data-card" style="background-color: #6e8efb;">
+                    <div class="value" style="color: #ffffff;">0 ¥</div>
+                    <div class="label" style="color: #ffffff;">已交易采购总金额</div>
+                    <div class="label cg" style="color: #6e8efb; font-size: 13px; background-color: #ffffff;">采购数量: 0
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+            <div class="data-cards">
+                <div class="data-card" style="background-color: #6e8efb;">
+                    <div class="value" style="color: #ffffff;">0 ¥</div>
+                    <div class="label" style="color: #ffffff;">个人采购总金额</div>
+                    <div class="label cg" style="color: #6e8efb; font-size: 13px; background-color: #ffffff;">个人采购: 0
+                    </div>
+                </div>
+
+
+                <div class="data-card" style="background-color: #6e8efb;">
+                    <div class="value" style="color: #ffffff;">0 ¥</div>
+                    <div class="label" style="color: #ffffff;">团队采购总金额</div>
+                    <div class="label cg" style="color: #6e8efb; font-size: 13px; background-color: #ffffff;">团队采购: 0
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+            
+
+
+
+
+            <div class="text-action-grid">
+                <div class="text-action-item">
+                     <!-- <div class="value">0</div> -->
+                       <h4>0</h4>
+                    <p>团队采购总人数</p>
+                </div>
+                
+                <div class="text-action-item">
+                    <h4>0</h4>
+                    <p>直推采购总人数</p>
+                </div>
+                <div class="text-action-item">
+                    <h4>0</h4>
+                    <p>直推采购总人数</p>
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+        </div>
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+    <!-- 
+
+
+<div class="multi-line-info">
+            
+            <div class="info-rows">
+                <div class="info-row">
+                    <span class="info-label">团队采购总人数</span>
+                    <span class="info-value">0</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">直推采购总人数</span>
+                    <span class="info-value">0</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">直推采购总人数</span>
+                    <span class="info-value highlight-value">0</span>
+                </div>
+            </div>
+        </div>
+         -->
+
+
+
+
+    <!-- 快速功能入口 -->
+    <!-- <div class="quick-actions">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM8 19h12v-2H8v2zm0-6h12v-2H8v2zm0-8v2h12V5H8z"/>
+                </svg>
+                我的服务
+            </h3>
+            <div class="action-grid">
+                <div class="action-item">
+                    <div class="icon-bg">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                    </div>
+                    <p>我的消息</p>
+                </div>
+                <div class="action-item">
+                    <div class="icon-bg">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                        </svg>
+                    </div>
+                    <p>我的收藏</p>
+                </div>
+                <div class="action-item">
+                    <div class="icon-bg">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                        </svg>
+                    </div>
+                    <p>购物车</p>
+                </div>
+                <div class="action-item">
+                    <div class="icon-bg">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-2V8c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v10h9v-1.5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5V19c0 .55-.45 1-1 1h-3v3.01c0 .55-.45 1-1 1s-1-.45-1-1V20H6c-2.21 0-4-1.79-4-4V8c0-2.21 1.79-4 4-4h5c.34 0 .66.05.96.15L8.77 5.77l1.41 1.41L12 4.84l2.82 2.82 1.41-1.41-1.58-1.59 3.04-.44zM18.5 10.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                        </svg>
+                    </div>
+                    <p>优惠券</p>
+                </div>
+            </div>
+        </div> -->
+
+
+
+
+
+
+
+
+
+
+    <!-- 列表 -->
+
+
+    
+    <div class="orders-section">
+        <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path
+                    d="M13 12h7v1.5h-7zm0-2.5h7V11h-7zm0 5h7V16h-7zM21 4H3c-1.1 0-2 .9-2 2v13c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 15h-9V6h9v13z" />
+            </svg>
+            团队信息
+        </h3>
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>会员类型</th>
+                    <th>会员帐号</th>
+                    <th>订单</th>
+                    <th>总金额</th>
+                    <th>人数</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>张三</td>
+                    <td><span class="order-status status-completed">普通会员</span></td>
+                    <td>14719854106</td>
+                    <td>0</td>
+                    <td>0 ¥</td>
+                    <td>0</td>
+
+                </tr>
+                <tr>
+                    <td>张三</td>
+                    <td><span class="order-status status-completed">普通会员</span></td>
+                    <td>14719854106</td>
+                    <td>0</td>
+                    <td>0 ¥</td>
+                    <td>0</td>
+
+                </tr>
+                <tr>
+                    <td>张三</td>
+                    <td><span class="order-status status-completed">普通会员</span></td>
+                    <td>14719854106</td>
+                    <td>0</td>
+                    <td>0 ¥</td>
+                    <td>0</td>
+
+                </tr>
+                <tr>
+                    <td>张三</td>
+                    <td><span class="order-status status-completed">普通会员</span></td>
+                    <td>14719854106</td>
+                    <td>0</td>
+                    <td>0 ¥</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>张三</td>
+                    <td><span class="order-status status-completed">普通会员</span></td>
+                    <td>14719854106</td>
+                    <td>0</td>
+                    <td>0 ¥</td>
+                    <td>0</td>
+
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+
+    <div style="height: 100px;"></div>
+
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item ">
+            <svg t="1755279003706" class="nav-icon" viewBox="0 0 1024 1024" version="1.1"
+                xmlns="http://www.w3.org/2000/svg" p-id="8753" width="39" height="39">
+                <path
+                    d="M555.541333 117.994667l312.874667 224.565333A117.333333 117.333333 0 0 1 917.333333 437.866667V800c0 64.8-52.533333 117.333333-117.333333 117.333333H640V746.666667c0-70.688-57.312-128-128-128s-128 57.312-128 128v170.666666H224c-64.8 0-117.333333-52.533333-117.333333-117.333333V437.877333a117.333333 117.333333 0 0 1 48.917333-95.317333l312.874667-224.565333a74.666667 74.666667 0 0 1 87.082666 0z"
+                    p-id="8754"></path>
+            </svg>
+            <span class="nav-text">首页</span>
+        </a>
+        <a href="team.html"  class="nav-item active">
+            <svg t="1755279631608" class="nav-icon" viewBox="0 0 1024 1024" version="1.1"
+                xmlns="http://www.w3.org/2000/svg" p-id="9979" id="mx_n_1755279631609" width="39" height="39">
+                <path
+                    d="M593.9 473.4c110.2 23.8 238.4 101.3 238.4 324.8 0 59.6-74.5 59.6-315.8 59.6-244.3 0-315.8 0-315.8-59.6 0-220.5 128.1-300.9 238.4-324.8-86.4-47.7-116.2-157.9-74.5-247.3s146-122.2 226.4-74.5 113.2 157.9 68.5 244.3c-15 35.8-38.8 59.6-65.6 77.5z"
+                    p-id="9980"></path>
+                <path
+                    d="M344.6 469.8c9.4-2.8 11.8-15 4-21-69.2-53-90.4-151.6-52.5-232.9 5.6-12 12.3-23 20-32.9 6.4-8.2-0.2-20.1-10.6-19.2-44.8 3.8-87.1 31.4-108.7 77.7-30.2 64.7-14.2 142.8 39.4 186.4 7.4 6.1 5.2 17.9-4 20.8-82.7 25.8-168.3 94.5-168.3 256.8 0 24.9 15.3 36.9 57.2 42.8 6.7 0.9 12.9-3.9 13.6-10.7 16.5-167.2 115.5-239.9 209.9-267.8zM679.5 469.8c-9.4-2.8-11.8-15-4-21 69.2-53 90.4-151.6 52.5-232.9-5.6-12-12.3-23-20-32.9-6.4-8.2 0.2-20.1 10.6-19.2 44.8 3.8 87.1 31.4 108.7 77.7 30.2 64.7 14.2 142.8-39.4 186.4-7.4 6.1-5.2 17.9 4 20.8 82.7 25.8 168.3 94.5 168.3 256.8 0 24.9-15.3 36.9-57.2 42.8-6.7 0.9-12.9-3.9-13.6-10.7-16.5-167.2-115.5-239.9-209.9-267.8z"
+                    p-id="9981"></path>
+            </svg>
+            <span class="nav-text">团队采购</span>
+        </a>
+        <!-- <a href="#" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+            </svg>
+            <span class="nav-text">添加</span>
+        </a> -->
+        <!-- <a href="#" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span class="nav-text">消息</span>
+        </a> -->
+        <a href="user.html" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+            </svg>
+            <span class="nav-text">我的</span>
+        </a>
+    </nav>
+
+
+
+</body>
+
+
+
+
+<script>
+    // 简单的导航项点击效果
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function (e) {
+            // e.preventDefault();
+
+            // 移除所有active类
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('active');
+            });
+
+            // 为当前点击项添加active类
+            this.classList.add('active');
+
+            // 这里可以添加实际的导航逻辑
+            console.log('导航到:', this.querySelector('.nav-text').textContent);
+        });
+    });
+</script>
+
+
+
+</html>

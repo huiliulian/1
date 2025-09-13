@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎登录</title>
+
+
+
+
+ <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .remember-me input {
+            margin-right: 8px;
+        }
+
+
+
+
+
+
+
+
+
+
+
+        .extra-options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .extra-options a {
+            color: #666;
+            text-decoration: none;
+        }
+        
+        .extra-options a:hover {
+            color: #4a90e2;
+        }
+    </style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+    <div class="login-container">
+        <h2>欢迎登录</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMe" checked>
+                <label for="rememberMe">记住登录状态</label>
+            </div>
+            
+            <button type="submit">登录</button>
+            <div class="error-message" id="errorMessage"></div>
+
+
+
+
+
+
+
+        <div class="extra-options">
+            <a href="#">忘记密码?</a>
+            <a href="Register_bomb_1.html">注册账号</a>
+        </div>
+
+
+        </form>
+    </div>
+
+
+	<script src="Bmob-2.5.30.min.js"></script>
+	<script>Bmob.initialize("d5c0b93ae0fac604", "admx19ddmxsn1jxa");</script>
+
+	<script src="local.js"></script>
+    <script src="auth.js"></script>
+	<script src="bmob.js"></script>
+     
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<script>
+        // 登录表单处理
+       
+	   
+	   
+	   // 4. 给  表单  提交  加上  async  标记 ， 让  里面  可以  用  await
+	   document.getElementById('loginForm').addEventListener('submit', async function(e) {
+	       e.preventDefault();
+	   
+	       const username = document.getElementById('username').value;
+	       const password = document.getElementById('password').value;
+	       const rememberMe = document.getElementById('rememberMe').checked;
+	   
+	       /* 4-1  等待  云端  返回  结果  （  要么  true  要么  false  ） */
+	       const ok = await Auth.login(username, password, rememberMe);
+	       if (ok) {
+	           /* 4-2  成功  后  跳  首页  ， 原  逻辑  不变 */
+			   //
+				
+				
+				
+				
+				
+				
+				function updateData() {
+				  const query = Bmob.Query("user");
+				  query.equalTo("tel", "==", username);
+				
+				  query.find().then(res => {
+				    if (res.length === 0) {
+				      alert("未找到匹配数据");
+				      return;
+				    }
+				
+				    // ✅ 拿到 JSON 对象
+				    const jsonObject = res[0];
+				
+				    // ✅ 用 objectId 重新构造 Bmob 对象
+				    const bmobObject = Bmob.Query("user");
+				    bmobObject.set("loginIdentifier", localId); // 关键：设置 id
+				
+				    // ✅ 保存（更新）
+				    return bmobObject.save();
+				  }).then(result => {
+				    console.log("更新成功：", result);
+				    // alert("更新成功！");
+				  }).catch(err => {
+				    console.error("出错：", err);
+				    alert("出错：" + err.message);
+				  });
+				}
+				
+
+				
+				updateData()
+				
+				
+				
+				
+				 
+				
+				
+			   // 
+	           window.location.href = 'index.html';
+	       } else {
+	           /* 4-3  失败  提示  也  保持  原  样 */
+	           const errorMsg = document.getElementById('errorMessage');
+	           errorMsg.textContent = '用户名或密码错误';
+	           errorMsg.style.display = 'block';
+	       }
+	   });
+	   
+	   
+    </script>
+	
+</body>
+</html>

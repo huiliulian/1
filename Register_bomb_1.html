@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+    <title>用户注册</title>
+    <!-- 引入 Bmob Web SDK -->
+  <script src="Bmob-2.5.30.min.js"></script>
+
+    <!-- 原有样式不动 -->
+    <style>
+        /* 与题目给出的 CSS 完全一致，这里省略节省篇幅 */
+        body{font-family:Arial,sans-serif;background:#f5f5f5;margin:0;height:100vh;display:flex;justify-content:center;align-items:center}
+        .register-container{background:#fff;padding:30px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1);width:350px}
+        h2{text-align:center;color:#333;margin-bottom:20px}
+        .form-group{margin-bottom:15px}
+        label{display:block;margin-bottom:5px;font-weight:bold;color:#555}
+        input[type=text],input[type=password]{width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;box-sizing:border-box;font-size:14px}
+        .error{color:red;font-size:12px;margin-top:5px;display:none}
+        button{width:100%;padding:12px;background:#4CAF50;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:16px;margin-top:10px}
+        button:hover{background:#45a049}
+        button:disabled{background:#a6c7ff;cursor:not-allowed}
+        .captcha-container{display:flex;align-items:center;margin-bottom:15px}
+        .captcha-box{display:flex;align-items:center;gap:.5rem}
+        #captchaCanvas{border:1px solid #ccc;border-radius:4px;cursor:pointer;background:#fafafa}
+        .captcha-input{padding:.45rem .6rem;font-size:1rem;border:1px solid #ccc;border-radius:4px;width:5rem}
+        .msg{margin-top:.5rem;font-size:.9rem;color:#e42c2c}
+        .return-login{background:#f83435 !important}
+        .return-login:hover{background:#e02d2e !important}
+    </style>
+</head>
+
+<body>
+<div class="register-container">
+    <h2>用户注册</h2>
+    <form id="registerForm">
+        <div class="form-group">
+            <label for="phone">手机号</label>
+            <input type="text" id="phone" placeholder="请输入11位手机号">
+            <div id="phoneError" class="error">请输入正确的11位手机号</div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" id="password" placeholder="请输入5-10个字符的密码">
+            <div id="passwordError" class="error">密码长度必须为5-10个字符</div>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">确认密码</label>
+            <input type="password" id="confirmPassword" placeholder="请再次输入密码">
+            <div id="confirmPasswordError" class="error">两次输入的密码不一致</div>
+        </div>
+
+        <div class="form-group">
+            <label for="invitationCode">邀请码</label>
+            <input type="text" id="invitationCode" placeholder="请输入邀请码">
+            <div id="invitationCodeError" class="error">邀请码不正确</div>
+        </div>
+
+        <div class="form-group">
+            <label>验证码</label>
+            <div class="captcha-box">
+                <canvas id="captchaCanvas" width="100" height="40" title="点击刷新"></canvas>
+                <input type="text" id="captchaInput" class="captcha-input" maxlength="4" placeholder="验证码" autocomplete="off" required>
+            </div>
+            <div class="msg" id="captchaMsg"></div>
+        </div>
+
+        <button type="button" id="registerBtn" disabled>注册</button>
+        <a href="login.html"> <button type="button" class="return-login"  >返回登录</button> </a>
+    </form>
+</div>
+
+<script>
+    /****************  一、Bmob 初始化  ****************/
+    // 以下两行来自 Bmob 控制台「应用密钥」
+	Bmob.initialize("d5c0b93ae0fac604", "admx19ddmxsn1jxa");
+
+    /****************  二、原有校验逻辑基本不变  ****************/
+    const phoneInput       = document.getElementById('phone');
+    const passwordInput    = document.getElementById('password');
+    const confirmInput     = document.getElementById('confirmPassword');
+    const inviteInput      = document.getElementById('invitationCode');
+    const captchaInput     = document.getElementById('captchaInput');
+    const canvas           = document.getElementById('captchaCanvas');
+    const regBtn           = document.getElementById('registerBtn');
+    const returnBtn        = document.querySelector('.return-login');
+
+    const phoneErr    = document.getElementById('phoneError');
+    const pwdErr      = document.getElementById('passwordError');
+    const confirmErr  = document.getElementById('confirmPasswordError');
+    const inviteErr   = document.getElementById('invitationCodeError');
+    const captchaMsg  = document.getElementById('captchaMsg');
+
+    let currentCaptcha = '';
+
+    /* 生成 4 位数字图形验证码（与之前完全一致） */
+    function drawCaptcha() {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fafafa'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        currentCaptcha = Array.from({length: 4}, () => Math.floor(Math.random()*10)).join('');
+        ctx.font = 'bold 24px/1 serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        for (let i = 0; i < 4; i++) {
+            ctx.save();
+            ctx.translate(12 + i*20, 20);
+            ctx.rotate((Math.random()*50-25)*Math.PI/180);
+            ctx.fillStyle = `rgb(${Math.random()*100+50},${Math.random()*100+50},${Math.random()*100+50})`;
+            ctx.fillText(currentCaptcha[i], 0, 0);
+            ctx.restore();
+        }
+        captchaInput.value = '';
+        captchaMsg.textContent = '';
+        regBtn.disabled = true;
+    }
+    drawCaptcha();
+    canvas.addEventListener('click', drawCaptcha);
+
+    /* 本地字段校验函数 */
+    function validatePhone() {
+        const ok = /^1[3-9]\d{9}$/.test(phoneInput.value.trim());
+        phoneErr.style.display = ok ? 'none' : 'block';
+        return ok;
+    }
+    function validatePwd() {
+        const len = passwordInput.value.length;
+        const ok = len >= 5 && len <= 10;
+        pwdErr.style.display = ok ? 'none' : 'block';
+        if (confirmInput.value) validateConfirm();
+        return ok;
+    }
+    function validateConfirm() {
+        const ok = confirmInput.value === passwordInput.value;
+        confirmErr.style.display = ok ? 'none' : 'block';
+        return ok;
+    }
+    function validateCaptcha() {
+        const ok = captchaInput.value === currentCaptcha;
+        captchaMsg.textContent = ok ? '' : '验证码错误';
+        return ok;
+    }
+    function checkAll() {
+        regBtn.disabled = !(validatePhone() && validatePwd() && validateConfirm() && validateCaptcha());
+    }
+    [phoneInput, passwordInput, confirmInput, captchaInput].forEach(el => el.addEventListener('input', checkAll));
+
+
+
+
+
+
+
+
+
+
+
+    /****************  三、注册按钮点击后的 Bmob 逻辑  ****************/
+    regBtn.addEventListener('click', async () => {
+        // 1. 再次本地校验
+        if (!validatePhone() || !validatePwd() || !validateConfirm() || !validateCaptcha()) return;
+
+        const phone = phoneInput.value.trim();
+        const pwd   = passwordInput.value;
+        const code  = inviteInput.value.trim();
+
+        try {
+            // 2. 去 Verification 表查询验证码是否正确
+            const verifyQuery = Bmob.Query('user');
+            verifyQuery.equalTo('code', '==', code); // 列名 code 保存了正确的邀请码
+            const verifyRes = await verifyQuery.find();
+            if (!verifyRes.length) {
+                inviteErr.textContent = '邀请码不存在';
+                inviteErr.style.display = 'block';
+                return;
+            }
+
+            // 3. 去 _User 表查手机号是否已注册
+            const userQuery = Bmob.Query('user');
+            userQuery.equalTo('tel', '==', phone);
+            const userRes = await userQuery.find();
+            if (userRes.length) {
+                phoneErr.textContent = '手机号已存在';
+                phoneErr.style.display = 'block';
+                return;
+            }
+			
+			
+			
+			
+			
+			// +1. 生成不重复的 6 位邀请码
+			let myCode;
+			while (true) {
+			    // 生成 6 位随机字母 + 数字
+			    myCode = Array.from({ length: 6 }, () => {
+			        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+			        return chars[Math.floor(Math.random() * chars.length)];
+			    }).join('');
+			
+			    // 去 user 表查重
+			    const chk = Bmob.Query('user');
+			    chk.equalTo('code', '==', myCode);
+			    const exist = await chk.find();
+			    if (!exist.length) break;   // 唯一，跳出循环
+			}
+
+
+
+
+            // 4. 真正注册：写 _User 表
+            const user = Bmob.Query('user');
+
+
+			user.set('tel', phoneInput.value);
+			user.set('pass', passwordInput.value);
+		    user.set('parentCode', code);
+			user.set('code', myCode);   
+		    user.set('level', "普通会员");
+			   
+   
+            await user.save();
+
+            alert('注册成功！,即将跳转登录页面');
+            // 实际项目里跳转到登录页
+            location.href = 'login.html';
+        } catch (err) {
+            console.error(err);
+            alert('注册失败：' + err.message);
+        }
+    });
+
+
+
+
+    /* 返回登录按钮 */
+    returnBtn.addEventListener('click', () => alert('返回登录页面'));
+</script>
+</body>
+</html>
+
+
+
+
+<!-- 
+ 
+ 
+ 
+ /* ==================  工具函数：保证唯一性  ================== */
+ async function getUniqueInviteCode() {
+   while (true) {
+     const code = generateInviteCode();
+     const q = Bmob.Query('user');
+     q.equalTo('code', '==', code);
+     const exist = await q.find();
+     if (!exist.length) return code; // 唯一，可直接返回
+     // 否则循环继续，重新生成
+   }
+ }
+ 
+ 
+ 
+ /* ==================  工具函数：生成 6 位随机码  ================== */
+ function generateInviteCode() {
+   const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+   let code = '';
+   for (let i = 0; i < 6; i++) {
+     code += chars[Math.floor(Math.random() * chars.length)];
+   }
+   return code;
+ }
+ 
+ 
+ 
+ 
+ /* ==================  注册按钮点击事件（完全覆盖原 regBtn 的监听器）  ================== */
+ regBtn.addEventListener('click', async () => {
+   /* 1. 本地校验（原逻辑不变） */
+   if (!validatePhone() || !validatePwd() || !validateConfirm() || !validateCaptcha()) return;
+ 
+   const phone = phoneInput.value.trim();
+   const pwd   = passwordInput.value;
+   const parentCode = inviteInput.value.trim(); // 用户手动填的上级邀请码，可为空
+ 
+   /* 2. 如果用户填了 parentCode，则验证其是否存在 */
+   if (parentCode) {
+     const q = Bmob.Query('user');
+     q.equalTo('code', '==', parentCode);
+     const res = await q.find();
+     if (!res.length) {
+       inviteErr.textContent = '邀请码不存在';
+       inviteErr.style.display = 'block';
+       return;
+     }
+   }
+ 
+   /* 3. 检查手机号是否已注册 */
+   const phoneQuery = Bmob.Query('user');
+   phoneQuery.equalTo('tel', '==', phone);
+   const phoneRes = await phoneQuery.find();
+   if (phoneRes.length) {
+     phoneErr.textContent = '手机号已存在';
+     phoneErr.style.display = 'block';
+     return;
+   }
+ 
+   /* 4. 生成该用户的唯一邀请码 */
+   const myCode = await getUniqueInviteCode();
+ 
+   /* 5. 写入数据库 */
+   try {
+     const user = Bmob.Query('user');
+     user.set('tel', phone);
+     user.set('pass', pwd);
+     user.set('parentCode', parentCode || ''); // 没填就留空
+     user.set('code', myCode);
+     user.set('level', '普通会员');
+     await user.save();
+ 
+     alert(`注册成功！您的专属邀请码是：${myCode}`);
+     // location.href = 'login.html';
+   } catch (err) {
+     console.error(err);
+     alert('注册失败：' + err.message);
+   }
+ });
+ -->

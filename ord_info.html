@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>页面标题</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding-top: 44px; /* 给标题栏留出空间 */
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 44px;
+            background-color: #6e8efb;
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-btn {
+            height: 100%;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .back-btn::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            border-left: 2px solid #FFFFFF;
+            border-bottom: 2px solid #FFFFFF;
+            transform: rotate(45deg);
+            margin-right: 5px;
+        }
+        
+        .title {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 17px;
+            font-weight: 600;
+            color: #FFFFFF;
+            max-width: 60%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+        }
+        
+        /* 适配小屏幕 */
+        @media (max-width: 320px) {
+            .title {
+                font-size: 16px;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+           .content-container {
+            padding: 12px;
+        }
+        
+        .info-section {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            padding: 12px 16px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: "";
+            width: 3px;
+            height: 14px;
+            background-color: #6e8efb;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+        
+        .info-list {
+            padding: 0 16px;
+        }
+        
+        .info-item {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            width: 80px;
+            flex-shrink: 0;
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .info-value {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+            text-align: right;
+            word-break: break-word;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 320px) {
+            .info-label {
+                width: 70px;
+                font-size: 13px;
+            }
+            .info-value {
+                font-size: 13px;
+            }
+        }
+
+
+
+
+
+
+
+   
+        .product-image {
+            width: ;
+            height: ;
+            flex-shrink: 0;
+            margin-right: 12px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      /*  #previewContainer {
+            margin-top: 20px;
+            min-height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        */
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            border: 1px solid #eee;
+            border-radius: 3px;
+        }
+        
+        
+        
+        #fileInput {
+            display: none;
+        }
+
+
+
+
+
+
+
+        .ConfirmPayment{
+                    background-color: #6e8efb;
+            border-radius: 15px;
+            padding:  5px;
+            color:#ffffff;
+            width:100%;
+            text-align: center;
+            border: #6e8efb solid 2px;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+	     .upload-container {
+	         margin: 16px 0;
+	         padding: 20px;
+	         border: 2px solid #e0e0e0;
+	         border-radius: 8px;
+	         text-align: center;
+	         background-color: #f9f9f9;
+	         transition: all 0.3s ease;
+	     }
+	     
+	     .upload-container:hover {
+	         border-color: #6e8efb;
+	         background-color: #f0f4ff;
+	     }
+	     
+		 
+		 
+		 
+/* 优化样式 */		 
+		 
+		 .upload-btn {
+		     padding: 10px 20px;
+		    background-color: #6e8efb;
+		     color: white;
+		     border: none;
+		     border-radius: 25px;
+		     cursor: pointer;
+		     font-size: 14px;
+		     font-weight: 500;
+		     box-shadow: 0 2px 5px rgba(110, 142, 251, 0.3);
+		     transition: all 0.3s ease;
+		     margin-bottom: 8px;
+		 }
+		 
+		 .upload-btn:hover {
+		     background: linear-gradient(135deg, #5a7df4, #9663d9);
+		     box-shadow: 0 4px 8px rgba(110, 142, 251, 0.3);
+		     transform: translateY(-1px);
+		 }
+		 
+		 .upload-btn:active {
+		     transform: translateY(0);
+		     box-shadow: 0 2px 3px rgba(110, 142, 251, 0.3);
+		 }
+		 
+
+ 
+ 
+ 
+ /* 之间的样式 */
+ 
+ 
+ 
+ 
+  /* 
+ .upload-container {
+     margin-bottom: 20px;
+     padding: 20px;
+     border: 2px dashed #ccc;
+     border-radius: 5px;
+     text-align: center;
+ }
+ 
+ .upload-btn {
+     padding: 10px 15px;
+     background-color: #4CAF50;
+     color: white;
+     border: none;
+     border-radius: 4px;
+     cursor: pointer;
+     font-size: 16px;
+ }
+ 
+ .upload-btn:hover {
+     background-color: #45a049;
+ }
+ */
+ 
+ 
+ 
+
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+		<!--  onclick="goBack()" -->
+        <div class="back-btn"  onclick="window.location.href='ord.html'"  ></div>
+        <div class="title">订单详情</div>
+    </div>
+
+
+  
+
+
+
+
+
+<!-- 新增的订单基础信息列表 -->
+    <div class="content-container">
+        <div class="info-section">
+            <!-- <div class="section-title">订单基础信息</div> -->
+            <div class="info-list">
+                <div class="info-item">
+                    <div class="info-label">产品名称</div>
+                    <div class="info-value">财富宝商品《盲盒xxx%》</div>
+                </div>
+                  <div class="info-item">
+                    <div class="info-label">订单编号</div>
+                    <div class="info-value">ORD202508192150312311</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">下单时间</div>
+                    <div class="info-value">2023-06-15 14:30:22</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">买家</div>
+                    <div class="info-value">张三</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">买家联系方式</div>
+                    <div class="info-value">157****5464</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">卖家</div>
+                    <div class="info-value">里斯</div>
+                </div>
+                 <div class="info-item">
+                    <div class="info-label">卖家联系方式</div>
+                    <div class="info-value">157****1234</div>
+                </div>
+                 <div class="info-item">
+                    <div class="info-label">支付价格</div>
+                    <div class="info-value">1571</div>
+                </div>
+                 <div class="info-item">
+                    <div class="info-label">服务费</div>
+                    <div class="info-value">1571</div>
+                </div>
+                  <div class="info-item">
+                    <div class="info-label">今日利润</div>
+                    <div class="info-value">1571</div>
+                </div>
+
+
+                   <div class="info-item">
+                    <div class="section-title">支付宝商家收款码</div>
+                   
+                </div>
+
+
+
+
+
+<!-- product-image -->
+  <div class="" >
+	 <a      href = 'alipays://platformapi/startapp?saId=10000007&qrcode=https://qr.alipay.com/2m619498wftd9jskfzdxte7'   ><button class="ConfirmPayment">去支付</button></a> 
+	          </div>
+
+
+
+
+
+            </div>
+        </div>
+        
+		
+		
+		
+		
+		
+		
+		
+		
+		<!-- 	
+		
+        <div class="info-section">
+            <div class="info-list">	   
+              <div class="upload-container">
+        <input type="file" id="fileInput" accept="image/*" multiple>
+        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">选择图片</button>
+        <p>请上传支付凭证</p>
+      
+    </div>
+    <div id="previewContainer"   class="product-image">
+      
+    </div>
+    <button class="ConfirmPayment">确认支付</button>
+
+            </div>
+        </div>
+		 -->
+		
+		
+		
+		<div class="info-section">
+		    <div class="info-list">
+		        <div class="upload-container">
+		            <textarea id="textInput" class="text-input" placeholder="请在此输入支付凭证详细信息（可多行）..."></textarea>
+		            <p>请粘贴或输入支付凭证的完整文本内容</p>
+		        </div>
+		        
+		        <div id="textPreviewContainer" class="text-preview">
+		            <!-- 输入的文本将在这里显示 -->
+		        </div>
+		
+		        <button class="ConfirmPayment">确认支付</button>
+		    </div>
+		</div>
+		
+		
+		
+<!-- 新增样式 -->
+<style>
+    .text-input {
+        width: 100%;
+        min-height: 150px;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 14px;
+        line-height: 1.5;
+        resize: vertical;
+        margin-bottom: 12px;
+        transition: border-color 0.3s ease;
+    }
+    
+    .text-input:focus {
+        border-color: #6e8efb;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(110, 142, 251, 0.2);
+    }
+    
+    .text-input::placeholder {
+        color: #bbb;
+    }
+    
+    .text-preview {
+        width: 100%;
+        min-height: 100px;
+        padding: 12px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        margin-bottom: 16px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-size: 13px;
+        color: #555;
+        line-height: 1.5;
+    }
+    
+    /* 调整上传容器样式 */
+    .upload-container {
+        margin: 16px 0;
+        padding: 16px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        transition: all 0.3s ease;
+    }
+    
+    .upload-container:hover {
+        border-color: #6e8efb;
+        background-color: #f0f4ff;
+    }
+    
+    /* 移除原来的图片上传相关样式 */
+    .preview-image {
+        display: none;
+    }
+</style>
+
+		
+		<script>
+		    // 获取DOM元素
+		    const textInput = document.getElementById('textInput');
+		    const textPreviewContainer = document.getElementById('textPreviewContainer');
+		    
+		    // 监听文本输入变化
+		    textInput.addEventListener('input', function() {
+		        // 更新预览区域
+		        textPreviewContainer.textContent = this.value;
+		        
+		        // 如果有内容则显示预览区域
+		        if(this.value.trim() !== '') {
+		            textPreviewContainer.style.display = 'block';
+		        } else {
+		            textPreviewContainer.style.display = 'none';
+		        }
+		    });
+		    
+		    // 初始化时隐藏预览区域
+		    textPreviewContainer.style.display = 'none';
+		</script>
+		
+		
+    </div>
+    
+
+
+
+
+</body>
+
+
+
+
+
+
+    <script>
+        // 获取DOM元素
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        
+        // 监听文件选择变化
+        fileInput.addEventListener('change', function(e) {
+            // 清空预览区域
+            previewContainer.innerHTML = '';
+            
+            // 获取选择的文件
+            const files = e.target.files;
+            
+            if (files.length === 0) {
+                return;
+            }
+            
+            // 遍历所有选择的文件
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // 检查文件类型是否为图片
+                if (!file.type.match('image.*')) {
+                    alert('请选择图片文件');
+                    continue;
+                }
+                
+                // 创建文件阅读器
+                const reader = new FileReader();
+                
+                // 文件加载完成后的回调
+                reader.onload = (function(file) {
+                    return function(e) {
+                        // 创建图片元素
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'preview-image';
+                        img.title = file.name;
+                        
+                        // 添加到预览区域
+                        previewContainer.appendChild(img);
+                    };
+                })(file);
+                
+                // 读取文件内容
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+
+
+
+
+</html>

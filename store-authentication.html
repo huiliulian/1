@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>商家入驻资料上传</title>
+	<script src="qiniu.min.js"></script>
+    <style>
+     
+	 
+	 
+	     * {
+	         margin: 0;
+	         padding: 0;
+	         box-sizing: border-box;
+	     }
+	     
+	     body {
+	         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	         padding-top: 44px;
+	         background-color: #f8f9fa;
+	         color: #333;
+	     }
+	     
+	     .header-bar {
+	         position: fixed;
+	         top: 0;
+	         left: 0;
+	         right: 0;
+	         height: 44px;
+	         background-color: #6e8efb;
+	         display: flex;
+	         align-items: center;
+	         z-index: 1000;
+	         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	     }
+	     
+	     .back-btn {
+	         height: 100%;
+	         padding: 0 16px;
+	         display: flex;
+	         align-items: center;
+	         cursor: pointer;
+	         position: relative;
+	         z-index: 1;
+	     }
+	     
+	     .back-btn::before {
+	         content: "";
+	         width: 12px;
+	         height: 12px;
+	         border-left: 2px solid #fff;
+	         border-bottom: 2px solid #fff;
+	         transform: rotate(45deg);
+	         margin-right: 5px;
+	         transition: all 0.3s ease;
+	     }
+	     
+	     .back-btn:hover::before {
+	         opacity: 0.8;
+	     }
+	     
+	     .title {
+	         position: absolute;
+	         left: 50%;
+	         top: 50%;
+	         transform: translate(-50%, -50%);
+	         font-size: 18px;
+	         font-weight: 600;
+	         color: #fff;
+	         max-width: 60%;
+	         white-space: nowrap;
+	         overflow: hidden;
+	         text-overflow: ellipsis;
+	         text-align: center;
+	         text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+	     }
+	     
+	     @media (max-width: 320px) {
+	         .title {
+	             font-size: 16px;
+	         }
+	     }
+	 
+	     .content-container {
+	         padding: 16px;
+	     }
+	     
+	     .info-section {
+	         background-color: #fff;
+	         border-radius: 12px;
+	         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+	         margin-bottom: 16px;
+	         overflow: hidden;
+	         border: 1px solid rgba(110, 142, 251, 0.1);
+	     }
+	     
+	     .section-title {
+	         padding: 14px 16px;
+	         font-size: 16px;
+	         font-weight: 600;
+	         color: #4a4a4a;
+	         border-bottom: 1px solid #f0f0f0;
+	         display: flex;
+	         align-items: center;
+	         background-color: #f9fafd;
+	     }
+	     
+	     .section-title::before {
+	         content: "";
+	         width: 4px;
+	         height: 16px;
+	          background-color: #6e8efb;
+	         border-radius: 4px;
+	         margin-right: 10px;
+	     }
+	     
+	     .info-list {
+	         padding: 0 16px;
+	     }
+	     
+	     .info-item {
+	         display: flex;
+	         padding: 14px 0;
+	         border-bottom: 1px solid #f0f0f0;
+	         align-items: center;
+	     }
+	     
+	     .info-item:last-child {
+	         border-bottom: none;
+	     }
+	     
+	     .info-label {
+	         width: 100px;
+	         flex-shrink: 0;
+	         font-size: 14px;
+	         color: #666;
+	         font-weight: 500;
+	     }
+	     
+	     .info-value {
+	         flex: 1;
+	         font-size: 14px;
+	         color: #333;
+	         text-align: right;
+	         word-break: break-word;
+	         border: 1px solid #eee;
+	         border-radius: 6px;
+	         padding: 8px 12px;
+	         background-color: #fafafa;
+	     }
+	     
+	     .info-value::placeholder {
+	         color: #ccc;
+	     }
+	     
+	     .info-value:focus {
+	         outline: none;
+	         border-color: #6e8efb;
+	         background-color: #fff;
+	         box-shadow: 0 0 0 2px rgba(110, 142, 251, 0.1);
+	     }
+	     
+	     @media (max-width: 320px) {
+	         .info-label {
+	             width: 80px;
+	             font-size: 13px;
+	         }
+	         .info-value {
+	             font-size: 13px;
+	         }
+	     }
+	 
+	     .product-image {
+	         width: 100%;
+	         max-width: 200px;
+	         margin: 12px auto;
+	         display: block;
+	         border-radius: 8px;
+	         overflow: hidden;
+	         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+	     }
+	     
+	     .product-image img {
+	         width: 100%;
+	         height: auto;
+	         object-fit: cover;
+	         display: block;
+	     }
+	 
+	     .upload-container {
+	         margin: 16px 0;
+	         padding: 20px;
+	         border: 2px solid #e0e0e0;
+	         border-radius: 8px;
+	         text-align: center;
+	         background-color: #f9f9f9;
+	         transition: all 0.3s ease;
+	     }
+	     
+	     .upload-container:hover {
+	         border-color: #6e8efb;
+	         background-color: #f0f4ff;
+	     }
+	     
+	     .preview-container {
+	         margin-top: 12px;
+	         display: flex;
+	         flex-wrap: wrap;
+	         gap: 10px;
+	         justify-content: center;
+	     }
+	     
+	     .preview-image {
+	         width: 80px;
+	         height: 80px;
+	         object-fit: cover;
+	         border: 1px solid #eee;
+	         border-radius: 6px;
+	         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+	     }
+	     
+	     .upload-btn {
+	         padding: 10px 20px;
+	        background-color: #6e8efb;
+	         color: white;
+	         border: none;
+	         border-radius: 25px;
+	         cursor: pointer;
+	         font-size: 14px;
+	         font-weight: 500;
+	         box-shadow: 0 2px 5px rgba(110, 142, 251, 0.3);
+	         transition: all 0.3s ease;
+	         margin-bottom: 8px;
+	     }
+	     
+	     .upload-btn:hover {
+	         background: linear-gradient(135deg, #5a7df4, #9663d9);
+	         box-shadow: 0 4px 8px rgba(110, 142, 251, 0.3);
+	         transform: translateY(-1px);
+	     }
+	     
+	     .upload-btn:active {
+	         transform: translateY(0);
+	         box-shadow: 0 2px 3px rgba(110, 142, 251, 0.3);
+	     }
+	     
+	     .file-input {
+	         display: none;
+	     }
+	 
+	     .ConfirmPayment {
+			 background-color: #6e8efb;
+	         border-radius: 25px;
+	         padding: 12px;
+	         color: #ffffff;
+	         width: 100%;
+	         text-align: center;
+	         border: none;
+	         margin: 20px 0 10px;
+	         font-size: 16px;
+	         font-weight: 600;
+	         box-shadow: 0 4px 12px rgba(110, 142, 251, 0.3);
+	         cursor: pointer;
+	         transition: all 0.3s ease;
+	     }
+	 
+	     .ConfirmPayment:hover {
+	         background: linear-gradient(135deg, #5a7df4, #9663d9);
+	         box-shadow: 0 6px 15px rgba(110, 142, 251, 0.4);
+	         transform: translateY(-1px);
+	     }
+	     
+	     .ConfirmPayment:active {
+	         transform: translateY(0);
+	         box-shadow: 0 3px 8px rgba(110, 142, 251, 0.3);
+	     }
+	 
+	     .upload-section {
+	         margin-bottom: 20px;
+	     }
+	 
+	     .upload-title {
+	         font-size: 14px;
+	         color: #666;
+	         margin-bottom: 10px;
+	         text-align: left;
+	         font-weight: 500;
+	     }
+	     
+	     .error-message {
+	         color: #ff4d4f;
+	         font-size: 12px;
+	         height: 18px;
+	         margin-top: 6px;
+	         text-align: left;
+	     }
+	     
+	     #progressWrapper {
+	         padding: 20px;
+	         text-align: center;
+	     }
+	     
+	     #progressBar {
+	         height: 8px;
+	         background-color: #f0f0f0;
+	         border-radius: 4px;
+	         margin: 15px 0;
+	         overflow: hidden;
+	     }
+	     
+	     #progressInner {
+	         height: 100%;
+	         background-color: #6e8efb;
+	         width: 0%;
+	         transition: width 0.3s ease;
+	         border-radius: 4px;
+	     }
+	     
+	     #progressText {
+	         font-weight: 600;
+	         color: #6e8efb;
+	     }
+	
+	
+	
+	
+	
+	
+	</style>
+</head>
+<body>
+    <div class="header-bar">
+		<!--  -->
+        <a href="index.html" class="back-btn"></a>
+        <div class="title">店铺认证</div>
+    </div>
+	
+	
+	<span id="usernameDisplay" style="display: none;"></span>
+
+
+<div class="content-container">
+    <div class="info-section">
+        <div class="info-list">
+            <!-- 营业执照上传区域 -->
+            <div class="upload-section">
+                <div class="upload-title"></div>
+                <div class="upload-container">
+                    <input type="file" id="licenseInput" class="file-input" accept="image/*">
+                    <button class="upload-btn" onclick="document.getElementById('licenseInput').click()">选择图片</button>
+                    <div class="">营业执照照片</div>
+                    <div id="licensePreview" class="preview-container"></div>
+                    <div id="licenseError" class="error-message" style="color: red; font-size: 12px;"></div>
+					<input type="hidden" id="licenseKey" name="licenseKey">
+				</div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">淘宝店铺地址</div>
+                <input id="taobaoShop" class="info-value" placeholder="请输入淘宝店铺地址" style="text-align:left">
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">阿里巴巴地址</div>
+                <input id="alibabaShop" class="info-value" placeholder="请输入阿里巴巴店铺地址" style="text-align:left">
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">熊猫无忧供应链采购商城</div>
+                <input id="pandaShop" class="info-value" placeholder="请输入熊猫无忧供应链采购商城" style="text-align:left">
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">天猫商城地址</div>
+                <input id="tmallShop" class="info-value" placeholder="请输入天猫商城地址" style="text-align:left">
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">支付宝账号</div>
+                <input id="alipayAccount" class="info-value" placeholder="请输入支付宝账号" style="text-align:left">
+            </div>
+
+            <div class="upload-container">
+                <input type="file" id="zfbInput" class="file-input" accept="image/*">
+                <button class="upload-btn" onclick="document.getElementById('zfbInput').click()">选择图片</button>
+                <div class="">支付宝远程收款码</div>
+                <div id="zfbPreview" class="preview-container"></div>
+                <div id="zfbError" class="error-message" style="color: red; font-size: 12px;"></div>
+				<input type="hidden" id="zfbKey" name="zfbKey">
+			</div>
+
+            <div class="upload-container">
+                <input type="file" id="zfbMerchantInput" class="file-input" accept="image/*">
+                <button class="upload-btn" onclick="document.getElementById('zfbMerchantInput').click()">选择图片</button>
+                <div class="">支付宝商家收款码</div>
+                <div id="zfbMerchantPreview" class="preview-container"></div>
+                <div id="zfbMerchantError" class="error-message" style="color: red; font-size: 12px;"></div>
+           <input type="hidden" id="zfbMerchantKey" name="zfbMerchantKey">
+			</div>
+
+            <div class="upload-container">
+                <input type="file" id="wxInput" class="file-input" accept="image/*">
+                <button class="upload-btn" onclick="document.getElementById('wxInput').click()">选择图片</button>
+                <div class="">微信商家收款码</div>
+                <div id="wxPreview" class="preview-container"></div>
+                <div id="wxError" class="error-message" style="color: red; font-size: 12px;"></div>
+					<input type="hidden" id="wxKey" name="wxKey">
+			</div>
+
+            <div class="info-item">
+                <div class="info-label">收款人</div>
+                <input id="payee" class="info-value" placeholder="请输入收款人" style="text-align:left">
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">浙江网商银行卡号</div>
+                <input id="bankAccount" class="info-value" placeholder="请输入浙江网商银行卡号" style="text-align:left">
+            </div>
+        </div>
+    </div>
+    
+    <div class="info-section">
+        <div class="info-list">
+			<div id="progressWrapper">
+			<div>正在上传信息中…<span id="progressText">0</span>%</div>
+			<div id="progressBar">
+				<div id="progressInner"></div>
+			</div>
+			<button id="submitBtn" class="ConfirmPayment">确认提交</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script src="local.js"></script>
+<script src="auth.js"></script>
+
+
+
+ <script>
+        // 检查登录状态
+        if (Auth.requireAuth()) {
+            // 显示用户名
+            document.getElementById('usernameDisplay').textContent = Auth.getCurrentUser();
+        }
+    </script>
+	
+	
+	
+	
+
+		<script>
+			/*****************************************************************
+			 * 0. 配置区：把下面 3 个变量换成你自己的
+			 *****************************************************************/
+			const QINIU_DOMAIN = 'http://t2561lyl0.hn-bkt.clouddn.com'; // 外链域名
+			const UPLOAD_TOKEN =
+				'Mj0LUlewgPZJGVWbYk7z-jJ6GYMgoEleM5lwA7hD:ESkmWRHXbalnySezU8tY8GGD1jY=:eyJzY29wZSI6ImNlczQ0IiwiZGVhZGxpbmUiOjE3NTcyMzkxNDJ9'; // 服务端给的 token
+			// const RENAME_RULE = (file, idx) => {
+			// 	/* 自定义重命名：时间戳+序号+原后缀 */
+			// 	const ext = file.name.split('.').pop();
+			// 	return `${Auth.getCurrentUser()}/${Date.now()}_${idx}.${ext}`;
+			// };
+
+
+
+
+
+/*****************************************************************
+ * 0. 配置区：新增「固定变量」和「统一后缀」
+ *****************************************************************/
+
+	
+	
+const FIXED_VAR       =    usernameDisplay.textContent ;    
+      // ${特定变量}
+const UNIFIED_EXT     = 'png';           // 统一格式后缀（不含点）
+
+/* 每个图片对应的固定后缀名字 */
+const IMG_SUFFIX_MAP  = {
+    licenseInput      : '_yyzz',
+    zfbInput          : '_zfb_payment_QR_code',
+    zfbMerchantInput  : '_zfb_payment_QR_code_merchant',
+    wxInput           : '_wx'
+};
+
+/* 新重命名函数：${特定变量}_${固定后缀}.统一后缀 */
+const RENAME_RULE = (file, inputId) =>
+    `${FIXED_VAR}_${IMG_SUFFIX_MAP[inputId]}.${UNIFIED_EXT}`;
+	
+	
+			/*****************************************************************
+			 * 1. 本地预览 + 单张 5M 限制（沿用你原来逻辑）
+			 *****************************************************************/
+			function initLocalPreview(inputId, previewId, errorId) {
+				const input = document.getElementById(inputId);
+				const preview = document.getElementById(previewId);
+				const error = document.getElementById(errorId);
+
+				input.addEventListener('change', function() {
+					preview.innerHTML = '';
+					error.textContent = '';
+					if (!this.files.length) return;
+
+					const file = this.files[0];
+					if (!file.type.startsWith('image/')) {
+						error.textContent = '请选择有效图片';
+						this.value = '';
+						return;
+					}
+					if (file.size > 5 * 1024 * 1024) {
+						error.textContent = '图片不能超过 5MB';
+						this.value = '';
+						return;
+					}
+					const reader = new FileReader();
+					reader.onload = e => {
+						const img = new Image();
+						img.src = e.target.result;
+						img.className = 'preview-image';
+						preview.appendChild(img);
+					};
+					reader.readAsDataURL(file);
+				});
+			}
+			/* 初始化 4 个上传区 */
+			initLocalPreview('licenseInput', 'licensePreview', 'licenseError');
+			initLocalPreview('zfbInput', 'zfbPreview', 'zfbError');
+			initLocalPreview('zfbMerchantInput', 'zfbMerchantPreview', 'zfbMerchantError');
+			initLocalPreview('wxInput', 'wxPreview', 'wxError');
+
+			/*****************************************************************
+			 * 2. 表单校验（文本必填 + 图片必须选）
+			 *****************************************************************/
+			function validateAll() {
+				let ok = true;
+				// 图片
+				const imgs = [{
+						id: 'licenseInput',
+						err: 'licenseError',
+						name: '营业执照'
+					},
+					{
+						id: 'zfbInput',
+						err: 'zfbError',
+						name: '支付宝远程收款码'
+					},
+					{
+						id: 'zfbMerchantInput',
+						err: 'zfbMerchantError',
+						name: '支付宝商家收款码'
+					},
+					{
+						id: 'wxInput',
+						err: 'wxError',
+						name: '微信商家收款码'
+					}
+				];
+				imgs.forEach(it => {
+					const input = document.getElementById(it.id);
+					const err = document.getElementById(it.err);
+					if (!input.files.length) {
+						err.textContent = `请上传${it.name}`;
+						ok = false;
+					} else err.textContent = '';
+				});
+				// 文本
+				const txts = ['taobaoShop', 'alibabaShop', 'pandaShop', 'tmallShop', 'alipayAccount', 'payee', 'bankAccount'];
+				txts.forEach(id => {
+					const el = document.getElementById(id);
+					if (!el.value.trim()) {
+						const err = document.getElementById(id + 'Error') || (() => {
+							const d = document.createElement('div');
+							d.className = 'error-message';
+							d.id = id + 'Error';
+							el.parentNode.appendChild(d);
+							return d;
+						})();
+						err.textContent = '此项必填';
+						ok = false;
+					} else {
+						const err = document.getElementById(id + 'Error');
+						if (err) err.textContent = '';
+					}
+				});
+				return ok;
+			}
+
+			/*****************************************************************
+			 * 3. 七牛直传：返回 Promise<key>
+			 *****************************************************************/
+			function uploadToQiniu(file, key) {
+				return new Promise((resolve, reject) => {
+					const observable = qiniu.upload(file, key, UPLOAD_TOKEN);
+					observable.subscribe({
+						next(res) {
+							const percent = Math.floor(res.total.percent);
+							document.getElementById('progressText').textContent = percent;
+							document.getElementById('progressInner').style.width = percent + '%';
+						},
+						error(err) {
+							reject(err);
+						},
+						complete(res) {
+							resolve(res.key);
+						}
+					});
+				});
+			}
+
+			/*****************************************************************
+			 * 4. 提交按钮：先传图 -> 再 POST 表单
+			 *****************************************************************/
+			document.getElementById('submitBtn').addEventListener('click', async function(e) {
+				e.preventDefault();
+				if (!validateAll()) return alert('请完善必填项');
+
+				/* 4-1 收集 4 张图 */
+				const tasks = [{
+						input: 'licenseInput',
+						keyInput: 'licenseKey'
+					},
+					{
+						input: 'zfbInput',
+						keyInput: 'zfbKey'
+					},
+					{
+						input: 'zfbMerchantInput',
+						keyInput: 'zfbMerchantKey'
+					},
+					{
+						input: 'wxInput',
+						keyInput: 'wxKey'
+					}
+				].map((t, idx) => {
+					const file = document.getElementById(t.input).files[0];
+					const key =  RENAME_RULE(file,t.input) ;
+					return uploadToQiniu(file, key).then(k => {
+						document.getElementById(t.keyInput).value = k; // 存隐藏域
+					});
+				});
+
+				/* 4-2 显示进度条 */
+				document.getElementById('progressWrapper').style.display = 'block';
+				this.disabled = true;
+
+				try {
+					// await Promise.all(tasks);
+					// /* 4-3 全部成功 -> 提交表单 */
+					// const form = document.createElement('form');
+					// form.method = 'POST';
+					// form.action = '/api/submit'; // 改成你后端接口
+					// /* 把页面所有 input 塞进去 */
+					// document.querySelectorAll('input[name]').forEach(el => {
+					// 	const inp = document.createElement('input');
+					// 	inp.name = el.name;
+					// 	inp.value = el.value;
+					// 	form.appendChild(inp);
+					// });
+					// document.body.appendChild(form);
+					// form.submit();
+				}
+				 
+				 catch (err) {
+					console.error(err);
+					alert('信息上传失败，请重试');
+					this.disabled = false;
+					document.getElementById('progressWrapper').style.display = 'none';
+				}
+			});
+		</script>
+
+
+
+
+
+
+<!-- 
+<script>
+    // 通用的图片上传处理函数（单张图片，限制5MB）
+    function handleSingleFileUpload(inputId, previewId, errorId) {
+        const fileInput = document.getElementById(inputId);
+        const previewContainer = document.getElementById(previewId);
+        const errorElement = document.getElementById(errorId);
+        
+        fileInput.addEventListener('change', function(e) {
+            // 清空预览区域和错误信息
+            previewContainer.innerHTML = '';
+            errorElement.textContent = '';
+            
+            const files = e.target.files;
+            
+            if (files.length === 0) {
+                return;
+            }
+            
+            // 只处理第一张图片
+            const file = files[0];
+            
+            // 检查文件类型
+            if (!file.type.match('image.*')) {
+                errorElement.textContent = '请选择有效的图片文件';
+                fileInput.value = ''; // 清空选择
+                return;
+            }
+            
+            // 检查文件大小 (5MB = 10 * 1024 * 1024 bytes)
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                errorElement.textContent = '图片大小不能超过5MB';
+                fileInput.value = ''; // 清空选择
+                return;
+            }
+            
+            // 预览图片
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewContainer.innerHTML = ''; // 清空之前的内容
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'preview-image';
+                img.title = file.name;
+                img.style.maxWidth = '200px';
+                img.style.maxHeight = '200px';
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    // 初始化所有上传区域
+    handleSingleFileUpload('licenseInput', 'licensePreview', 'licenseError');
+    handleSingleFileUpload('zfbInput', 'zfbPreview', 'zfbError');
+    handleSingleFileUpload('zfbMerchantInput', 'zfbMerchantPreview', 'zfbMerchantError');
+    handleSingleFileUpload('wxInput', 'wxPreview', 'wxError');
+
+    // 表单验证函数
+    function validateForm() {
+        let isValid = true;
+        
+        // 验证所有必填图片上传
+        const imageUploads = [
+            {id: 'licenseInput', errorId: 'licenseError', name: '营业执照照片'},
+            {id: 'zfbInput', errorId: 'zfbError', name: '支付宝远程收款码'},
+            {id: 'zfbMerchantInput', errorId: 'zfbMerchantError', name: '支付宝商家收款码'},
+            {id: 'wxInput', errorId: 'wxError', name: '微信商家收款码'}
+        ];
+        
+        // 验证图片上传
+        imageUploads.forEach(upload => {
+            const input = document.getElementById(upload.id);
+            const errorElement = document.getElementById(upload.errorId);
+            
+            if (!input.files || input.files.length === 0) {
+                errorElement.textContent = `请上传${upload.name}`;
+                isValid = false;
+            } else {
+                errorElement.textContent = '';
+            }
+        });
+        
+        // 验证所有文本输入框
+        const requiredInputs = [
+            {id: 'taobaoShop', name: '淘宝店铺地址'},
+            {id: 'alibabaShop', name: '阿里巴巴地址'},
+            {id: 'pandaShop', name: '熊猫无忧供应链采购商城'},
+            {id: 'tmallShop', name: '天猫商城地址'},
+            {id: 'alipayAccount', name: '支付宝账号'},
+            {id: 'payee', name: '收款人'},
+            {id: 'bankAccount', name: '浙江网商银行卡号'}
+        ];
+        
+        requiredInputs.forEach(input => {
+            const element = document.getElementById(input.id);
+            const errorElement = document.getElementById(input.id + 'Error');
+            
+            if (!element.value.trim()) {
+                if (!errorElement) {
+                    const newError = document.createElement('div');
+                    newError.id = input.id + 'Error';
+                    newError.className = 'error-message';
+                    newError.style.color = 'red';
+                    newError.style.fontSize = '12px';
+                    element.parentNode.appendChild(newError);
+                }
+                document.getElementById(input.id + 'Error').textContent = `请输入${input.name}`;
+                isValid = false;
+            } else if (errorElement) {
+                errorElement.textContent = '';
+            }
+        });
+        
+        return isValid;
+    }
+    
+    // 提交按钮事件
+    document.getElementById('submitBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        if (validateForm()) {
+            // 表单验证通过，可以提交
+            alert('表单验证通过，正在提交...');
+            // 这里可以添加实际的提交逻辑，如AJAX请求
+            // document.querySelector('form').submit();
+        } else {
+            alert('请填写所有必填项并上传所有必要的图片');
+        }
+    });
+    
+    // 为所有输入框添加实时验证
+    document.querySelectorAll('.info-value').forEach(input => {
+        input.addEventListener('input', function() {
+            const errorElement = document.getElementById(this.id + 'Error');
+            if (errorElement && this.value.trim()) {
+                errorElement.textContent = '';
+            }
+        });
+    });
+</script> -->
+
+
+</body>
+</html>

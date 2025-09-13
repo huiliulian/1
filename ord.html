@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>页面标题</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding-top: 44px; /* 给标题栏留出空间 */
+        }
+        
+        .header-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 44px;
+            background-color: #6e8efb;
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-btn {
+            height: 100%;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .back-btn::before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            border-left: 2px solid #FFFFFF;
+            border-bottom: 2px solid #FFFFFF;
+            transform: rotate(45deg);
+            margin-right: 5px;
+        }
+        
+        .title {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 17px;
+            font-weight: 600;
+            color: #FFFFFF;
+            max-width: 60%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+        }
+        
+        /* 适配小屏幕 */
+        @media (max-width: 320px) {
+            .title {
+                font-size: 16px;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+         .tab-bar {
+            display: flex;
+            height: 40px;
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #e5e5e5;
+            position: sticky;
+            top: 44px;
+            z-index: 999;
+        }
+        
+        .tab-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .tab-item.active {
+            color: #6e8efb;
+            font-weight: 500;
+        }
+        
+        .tab-item.active::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background-color: #6e8efb;
+            border-radius: 2px;
+        }
+        
+        /* 适配小屏幕 */
+        @media (max-width: 320px) {
+            .tab-item {
+                font-size: 13px;
+            }
+        }
+   
+
+        
+
+
+
+
+
+ 
+        .content-container {
+            padding: 12px;
+        }
+        
+        .order-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 12px;
+            overflow: hidden;
+
+            border: #f5f5f5 solid 2px;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .order-id {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .order-status {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #fff7e6;
+            color: #fa8c16;
+        }
+        
+        .status-shipping {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+        
+        .status-completed {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .order-body {
+            display: flex;
+            padding: 12px;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+            margin-right: 12px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .product-title {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .product-specs {
+            font-size: 12px;
+            color: #999;
+            margin: 4px 0;
+        }
+        
+        .product-price {
+            font-size: 16px;
+            color: #ff4d4f;
+            font-weight: 500;
+        }
+        
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #fafafa;
+            border-top: 1px solid #f5f5f5;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 360px) {
+            .product-image {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .product-title {
+                font-size: 13px;
+            }
+            
+            .product-price {
+                font-size: 14px;
+            }
+        }
+            margin-right: 8px;
+        }
+        
+
+ .info-section {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+
+
+
+
+
+
+
+
+
+
+ .product-s-b {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            margin: 5px;
+
+
+        }
+        
+
+
+        .seller{
+            background-color: #ff4d4f;
+            border-radius: 8px;
+            color:#ffffff;
+            padding:  0px 8px;
+        }
+
+
+        .buyer{
+
+            background-color: #6e8efb;
+            border-radius: 8px;
+            padding:  0px 8px;
+            color:#ffffff;
+
+        }
+
+
+
+        .amount{
+             color:#ff4d4f;
+
+            font-size: 20px ;
+            font-weight: 700;
+
+        }
+
+
+        .amount_button{
+                  background-color: #52c41a;
+            border-radius: 15px;
+            padding:  5px;
+            color:#ffffff;
+            width:80px;
+            text-align: center;
+        }
+		
+		.amount_button:hover {
+		            background-color: #3D9810;
+		            }
+		
+		
+		
+		
+		
+		
+
+
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <div class="back-btn"    onclick="window.location.href='index.html'" ></div>
+        <div class="title">采购清单</div>
+    </div>
+
+
+    
+    <!-- 新增的选择栏 -->
+    <div class="tab-bar">
+        <div class="tab-item active" onclick="switchTab(this, 'tab1')">待付款</div>
+        <div class="tab-item" onclick="switchTab(this, 'tab2')">待确认</div>
+        <div class="tab-item" onclick="switchTab(this, 'tab3')">已完成</div>
+    </div>
+
+
+
+
+
+
+
+<div class="content-container">
+        <!-- 订单卡片1 -->
+        <div class="order-card">
+            <div class="order-header">
+                <span class="order-id">订单号: ORD202508192150312311</span>
+                <span class="order-status status-shipping">配送中</span>
+            </div>
+            
+            <div class="order-body">
+                <div class="product-image">
+                    <img src="./img/2025022610503086e056268.jpg" alt="商品图片">
+                </div>
+                <div class="product-info">
+                    <div class="product-title">财富宝商品《盲盒xxx%》</div>
+
+                    <div class="product-s-b"><span class="seller">卖家</span>&nbsp;&nbsp;张三</div>
+                    <div class="product-s-b"><span class="buyer">买家</span>&nbsp;&nbsp;里斯</div>
+
+                    <div class="product-specs"> 1970-01-1 08:00:00</div>
+                    <!-- <div class="product-specs">颜色: 黑色 | 尺寸: M</div> -->
+                    <!-- <div class="product-price">¥199.00</div> -->
+                </div>
+            </div>
+
+
+
+            <div class="order-footer">
+                <span>金额: <span class="amount">1000</span></span>
+                <span>今日利润: <span class="amount">1000</span></span>
+                <span>服务费: <span class="amount">1000</span></span>
+            </div>
+
+
+
+            <div class="order-footer">
+                        <span></span> 
+                        <span class="amount_button"  onclick="window.location.href='ord_info.html'"   >立即支付</span>
+                    </div>
+
+
+
+            <!-- 
+            <div class="order-footer">
+                <span>共1件商品</span>
+                <span>实付: ¥199.00</span>
+            </div> -->
+        </div>
+        
+        <!-- 订单卡片2 -->
+        <!-- <div class="order-card">
+            <div class="order-header">
+                <span class="order-id">订单号: 20231114987654321</span>
+                <span class="order-status status-completed">已完成</span>
+            </div>
+            
+            <div class="order-body">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/150" alt="商品图片">
+                </div>
+                <div class="product-info">
+                    <div class="product-title">另一个商品标题，测试多行省略效果</div>
+                    <div class="product-specs">颜色: 白色 | 尺寸: XL</div>
+                    <div class="product-price">¥299.00</div>
+                </div>
+            </div>
+            
+            <div class="order-footer">
+                <span>共2件商品</span>
+                <span>实付: ¥598.00</span>
+            </div>
+        </div> -->
+    </div>
+
+
+
+    
+    <!-- 页面内容 -->
+
+
+    <script>
+        function goBack() {
+            // 优先使用历史记录返回，如果没有则跳转到指定页面
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // 可以替换为你想要返回的默认页面
+                window.location.href = '/';
+            }
+        }
+        
+        // 防止iOS上点击延迟
+        if ('addEventListener' in document) {
+            document.addEventListener('DOMContentLoaded', function() {
+                FastClick.attach(document.body);
+            }, false);
+        }
+    </script>
+    
+    <!-- 可选：引入FastClick解决移动端点击延迟 -->
+    <script src='https://as.alipayobjects.com/g/component/fastclick/1.0.6/fastclick.js'></script>
+
+
+
+     <script>
+        // 原有脚本保持不变，新增以下函数
+        
+        function switchTab(element, tabId) {
+            // 移除所有active类
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 给当前点击项添加active类
+            element.classList.add('active');
+            
+            // 这里可以添加切换内容的逻辑
+            console.log('切换到:', tabId);
+        }
+        
+        // 原有goBack函数保持不变
+    </script>
+
+
+
+
+
+
+</body>
+</html>
