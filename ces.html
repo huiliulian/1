@@ -1,1 +1,28 @@
-<meta http-equiv="refresh" content="2;url=https://magenta-cuchufli-f7c44b.netlify.app/">
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>请在外部浏览器打开</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial; padding: 20px; text-align: center; }
+    .url { background: #f1f1f1; padding: 10px; margin: 20px 0; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <h2>请复制以下网址到浏览器打开：</h2>
+  <div class="url" id="url">https://magenta-cuchufli-f7c44b.netlify.app</div>
+  <button onclick="copyUrl()">一键复制网址</button>
+
+  <script>
+    function copyUrl() {
+      const url = document.getElementById('url').innerText;
+      navigator.clipboard.writeText(url).then(() => {
+        alert('已复制，请切换到浏览器粘贴访问');
+      });
+    }
+  </script>
+</body>
+</html>
+
