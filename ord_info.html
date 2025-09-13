@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-		<title>页面标题</title>
+		<title>订单详情</title>
 		<style>
 			* {
 				margin: 0;
@@ -428,9 +428,11 @@
 
 
 
-    <button id="copyButton" class="ConfirmPayment" >点击复制支付链接</button>
-    <p id="message"></p>
+   
 
+
+
+<button id="copyBtn" class="ConfirmPayment">点击复制支付链接</button>
 
 
 
@@ -635,36 +637,18 @@
 	</script>
 
 
-
-
-    <script>
-        // 要复制的内容
-        const textToCopy = "https://qr.alipay.com/2m619498wftd9jskfzdxte7";
-        
-        document.getElementById('copyButton').addEventListener('click', async () => {
-            try {
-                // 使用Clipboard API写入文本
-                await navigator.clipboard.writeText(textToCopy);
-                
-                // 显示成功消息
-                const message = document.getElementById('message');
-                message.textContent = '复制成功！';
-                message.style.color = 'green';
-                
-                // 3秒后消失
-                setTimeout(() => {
-                    message.textContent = '';
-                }, 3000);
-            } catch (err) {
+<script>
+    const text = "这是要复制的文本内容";
+    
+    document.getElementById('copyBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(text)
+            .then(() => alert('复制成功！'))
+            .catch(err => {
                 console.error('复制失败:', err);
-                const message = document.getElementById('message');
-                message.textContent = '复制失败，请手动选择文本复制';
-                message.style.color = 'red';
-            }
-        });
-    </script>
-	
-	
+                alert('复制失败，请手动复制');
+            });
+    });
+</script>
 
 
 
